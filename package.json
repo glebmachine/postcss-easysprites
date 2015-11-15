@@ -1,0 +1,29 @@
+{
+  "name": "postcss-easysprite",
+  "version": "0.0.0",
+  "description": "PostCSS plugin that generate sprites, properly (inspired by postcss-sprites))",
+  "keywords": [
+    "postcss",
+    "css",
+    "postcss-plugin",
+    "sprite",
+    "sprites"
+  ],
+  "author": "Gleb Mikheev <mikheev@betaagency.ru>",
+  "license": "MIT",
+  "repository": "glebmachine/postcss-easysprite",
+  "bugs": {
+    "url": "https://github.com/glebmachine/postcss-easysprite/issues"
+  },
+  "homepage": "https://github.com/glebmachine/postcss-easysprite",
+  "dependencies": {
+    "postcss": "^5.0.10"
+  },
+  "devDependencies": {
+    "ava": "^0.4.2",
+    "eslint": "^1.9.0"
+  },
+  "scripts": {
+    "test": "ava && eslint *.js"
+  }
+}
