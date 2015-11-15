@@ -1,0 +1,25 @@
+
+.arrow {
+  background-image: url('/images/arrow-next.png#elements');
+}
+.arrow:hover {
+  background-image: url('/images/arrow-next_hover.png#elements');
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
+  .dialog-requestsimcard__next .icon {
+    background-image: url('images/arrow-next@2x.png#elements');
+  }
+  .dialog-requestsimcard__next:hover .icon {
+    background-image: url('/images/arrow-next_hover@2x.png#elements');
+  }
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2.5) {
+  .dialog-requestsimcard__next .icon {
+    background-image: url('images/arrow-next@3x.png#elements');
+  }
+  .dialog-requestsimcard__next:hover .icon {
+    background-image: url('images/arrow-next_hover@3x.png#elements');
+  }
+}

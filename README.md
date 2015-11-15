@@ -1,6 +1,6 @@
 # PostCSS Easysprite [![Build Status][ci-img]][ci]
 
-[PostCSS] plugin that generate sprites, properly (inspired by postcss-sprites)).
+[PostCSS] plugin that generate sprites, properly (inspired by postcss-sprites).
 
 [PostCSS]: https://github.com/postcss/postcss
 [ci-img]:  https://travis-ci.org/glebmachine/postcss-easysprite.svg

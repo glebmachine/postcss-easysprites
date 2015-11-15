@@ -1,0 +1,19 @@
+
+.arrow { background-image: url(../sprites/elements.png); background-position: 0 0;
+}
+.arrow:hover { background-image: url(../sprites/elements.png); background-position: -28px 0;
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
+  .dialog-requestsimcard__next .icon { background-image: url(../sprites/elements@2x.png); background-position: 0 0;
+  }
+  .dialog-requestsimcard__next:hover .icon { background-image: url(../sprites/elements@2x.png); background-position: -56px 0;
+  }
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2.5) {
+  .dialog-requestsimcard__next .icon { background-image: url(../sprites/elements@3x.png); background-position: 0 0;
+  }
+  .dialog-requestsimcard__next:hover .icon { background-image: url(../sprites/elements@3x.png); background-position: -84px 0;
+  }
+}

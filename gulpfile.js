@@ -1,23 +1,32 @@
+'use strict';
+
 var gulp = require('gulp');
-
 var files = ['index.js', 'test/*.js', 'gulpfile.js'];
+var postcss = require('gulp-postcss');
+var easysprite = require('./index.js');
+var rename = require('gulp-rename');
 
-gulp.task('lint', function () {
-    var eslint = require('gulp-eslint');
-    return gulp.src(files)
-        .pipe(eslint())
-        .pipe(eslint.format())
-        .pipe(eslint.failAfterError());
-});
-
-gulp.task('test', function () {
+gulp.task('test', ['project'], function() {
     var mocha = require('gulp-mocha');
     return gulp.src('test/*.js', { read: false })
-        .pipe(mocha());
+      .pipe(mocha());
 });
 
-gulp.task('default', ['lint', 'test']);
+gulp.task('project', function(){
 
-gulp.task('watch', function () {
-    gulp.watch(files, ['lint', 'test']);
+    gulp.src('./test/basic/input.css')
+      .pipe(postcss([
+        easysprite({
+          imagePath:'/test/basic/', 
+          spritePath: '/test/basic/sprites/'
+        })
+      ]))
+      .pipe(rename('output.css'))
+      .pipe(gulp.dest('./test/basic/'));
+});
+
+gulp.task('default', ['test']);
+
+gulp.task('watch', ['test'], function() {
+    gulp.watch(files, ['test']);
 });
