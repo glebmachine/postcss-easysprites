@@ -28,6 +28,7 @@ Plugin support relative/absolute paths on input file, but still can generate onl
  - `spritePath` path for write completed sprites
  - `stylesheetPath` path for resolve relative images (css file folder used for default)
 
+## Input example
 ```css
 .arrow {
   background-image: url('/images/arrow-next.png#elements');
@@ -55,6 +56,7 @@ Plugin support relative/absolute paths on input file, but still can generate onl
 }
 ```
 
+## Output example
 ```css
 .arrow { 
   background-image: url(sprites/elements.png); 
