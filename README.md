@@ -15,7 +15,7 @@ Fill free to file an issue / feature request
 Just append `#spritename` to the end of image url. No complicated mechanism or strict folder structure. Just one simple hash
 
 ## Retina
-Plugin will move all retina images, with any ratio to separate sprite. To achieve this all retina images should be declarated with `@2x` suffix (where number is image ratio).
+Plugin moving all retina images, with any ratio to separate sprite. To achieve this all retina images should be declarated with `@2x` suffix (where number is image ratio).
 
 ## Caching/perfomance
 Large project got huge time to compile. This plugin check your files md5 and compile only new sprites. No more silly work! (not first time, yet)
