@@ -12,13 +12,13 @@ Fill free to file an issue / feature request
 
 
 ## Usage
-Just append `#spritename` to the end of image url. No complicated mechanism, or strict folder structure. Just one simple hash
+Just append `#spritename` to the end of image url. No complicated mechanism or strict folder structure. Just one simple hash
 
 ## Retina
-Plugin will move all retina images, with any ratio, to separate sprite. To achieve this, all retina images should be declarated with `@2x` suffix (where number is image ratio).
+Plugin will move all retina images, with any ratio to separate sprite. To achieve this all retina images should be declarated with `@2x` suffix (where number is image ratio).
 
 ## Caching/perfomance
-Large project got huge time to compile. This plugin check your files md5, and compile only new sprites. No more silly work!
+Large project got huge time to compile. This plugin check your files md5 and compile only new sprites. No more silly work! (not first time, yet)
 
 ## Relative/absolute paths
 Plugin support relative/absolute paths on input file, but still can generate only relative paths on output file (i'm working on it)
