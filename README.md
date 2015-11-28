@@ -23,6 +23,11 @@ Large project got huge time to compile. This plugin check your files md5 and com
 ## Relative/absolute paths
 Plugin support relative/absolute paths on input file, but still can generate only relative paths on output file (i'm working on it)
 
+## Plugin options
+ - `imagePath` path for resolve absolute images
+ - `spritePath` path for write completed sprites
+ - `stylesheetPath` path for resolve relative images (css file folder used for default)
+
 ```css
 .arrow {
   background-image: url('/images/arrow-next.png#elements');
