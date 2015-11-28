@@ -25,13 +25,13 @@
     "mkdirp": "^0.5.1",
     "postcss": "^5.0.10",
     "q": "^1.4.1",
-    "spritesmith": "^1.5.0"
+    "spritesmith": "^1.5.0",
+    "md5": "^2.0.0"
   },
   "devDependencies": {
     "ava": "^0.4.2",
     "eslint": "^1.9.0",
     "gulp-rename": "^1.2.2",
-    "postcss-cachebuster": "^0.1.0"
   },
   "scripts": {
     "test": "ava && eslint *.js"

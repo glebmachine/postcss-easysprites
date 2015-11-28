@@ -6,8 +6,10 @@ var path = require('path');
 var chalk = require('chalk');
 var async = require('async');
 var spritesmith = require('spritesmith');
+var mkdirp = require('mkdirp');
 var fs = require('fs');
-var mkdirp = require('mkdirp')
+var md5 = require('md5');
+var cache = {};
 
 /**
  * Constants.
@@ -205,6 +207,20 @@ function runSpriteSmith(images, opts) {
           }
         }
 
+        var checkstring = [];
+        // collect images datechanged
+        lodash.each(config.src, function(image){
+          checkstring.push(image+'='+md5(fs.readFileSync(image).toString()));
+        });
+        checkstring = md5(checkstring.join('&'));
+        
+        if (cache[checkstring]) {
+          console.log('Easysprite:', chalk.green.underline(temp.replace(/^_./,'')).replace(/.@/,'@'), 'unchanged.');
+          return Q.nfcall(function(){});
+        }
+
+        cache[checkstring] = true;
+
         return Q.nfcall(spritesmith, config)
           .then(function(result) {
             temp = temp.split(GROUP_DELIMITER);
@@ -243,7 +259,7 @@ function saveSprites(images, opts, sprites) {
 
         return Q.nfcall(fs.writeFile, sprite.path, new Buffer(sprite.image, 'binary'))
           .then(function() {
-            console.log('Spritesheet ', chalk.yellow.underline(sprite.path), ' generated.');
+            console.log('Easysprite:', chalk.yellow.underline(sprite.path), 'generated.');
             return sprite;
           });
       })
@@ -271,7 +287,7 @@ function saveSprites(images, opts, sprites) {
  * @return {Promise}
  */
 function mapSpritesProperties(images, opts, sprites) {
-  return Q.Promise(function(resolve, reject) {
+  return Q.Promise(function(resolve) {
     sprites = lodash.map(sprites, function(sprite) {
       return lodash.map(sprite.coordinates, function (coordinates, imagePath) {
         return lodash.merge(lodash.find(images, { path: imagePath }), {
@@ -287,7 +303,7 @@ function mapSpritesProperties(images, opts, sprites) {
 }
 
 function updateReferences(images, opts, sprites, css) {
-  return Q.Promise(function(resolve, reject) {
+  return Q.Promise(function(resolve) {
     css.eachComment(function(comment) {
       var rule, image, backgroundImage, backgroundPosition, backgroundSize;
 
@@ -424,7 +440,7 @@ function getColor(decl) {
   var matches = null;
 
   lodash.forEach(regexes, function(regex) {
-    var regex = new RegExp(regex, 'gi');
+    regex = new RegExp(regex, 'gi');
 
     if (regex.test(decl.value)) {
       matches = decl.value.match(regex);

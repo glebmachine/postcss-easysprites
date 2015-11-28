@@ -13,6 +13,6 @@ var assert = function (input, output, opts, done) {
     });
 };
 
-describe('postcss-cachebuster', function (done) {
+describe('postcss-easysprite', function (done) {
   assert('a {}', 'a {}', {}, done);
 });

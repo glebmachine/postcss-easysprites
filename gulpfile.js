@@ -1,7 +1,6 @@
 'use strict';
 
 var gulp = require('gulp');
-var files = ['index.js', 'test/*.js', 'gulpfile.js'];
 var postcss = require('gulp-postcss');
 var easysprite = require('./index.js');
 var rename = require('gulp-rename');
@@ -25,8 +24,8 @@ gulp.task('project', function(){
       .pipe(gulp.dest('./test/basic/'));
 });
 
-gulp.task('default', ['test']);
+gulp.task('default', ['project']);
 
-gulp.task('watch', ['test'], function() {
-    gulp.watch(files, ['test']);
+gulp.task('watch', function() {
+    gulp.watch('test/{**/*,*.*}', ['project']);
 });
