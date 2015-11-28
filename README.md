@@ -1,4 +1,9 @@
+### Carefull! Plguin is uncompeled, don't letdown before i finish at all!!
+Fill free to file feature request!
+
+
 # PostCSS Easysprite [![Build Status][ci-img]][ci]
+
 
 [PostCSS] plugin that generate sprites, properly (inspired by postcss-sprites).
 
