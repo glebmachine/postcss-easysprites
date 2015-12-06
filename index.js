@@ -20,7 +20,7 @@ function debug() {
   gutil.log.apply(false, data);
 }
 function log() {
-  var data = ['Easysprite', gutil.colors.red('debug'),':'].concat(Array.prototype.slice.call(arguments));
+  var data = ['Easysprite'].concat(Array.prototype.slice.call(arguments));
   gutil.log.apply(false, data);
 }
 
