@@ -1,5 +1,5 @@
 {
-  "name": "postcss-easysprite",
+  "name": "postcss-easysprites",
   "version": "0.0.0",
   "description": "PostCSS plugin that generate sprites, properly (inspired by postcss-sprites))",
   "keywords": [
@@ -11,11 +11,11 @@
   ],
   "author": "Gleb Mikheev <mikheev@betaagency.ru>",
   "license": "MIT",
-  "repository": "glebmachine/postcss-easysprite",
+  "repository": "glebmachine/postcss-easysprites",
   "bugs": {
-    "url": "https://github.com/glebmachine/postcss-easysprite/issues"
+    "url": "https://github.com/glebmachine/postcss-easysprites/issues"
   },
-  "homepage": "https://github.com/glebmachine/postcss-easysprite",
+  "homepage": "https://github.com/glebmachine/postcss-easysprites",
   "dependencies": {
     "async": "^1.5.0",
     "gulp-postcss": "^6.0.1",
