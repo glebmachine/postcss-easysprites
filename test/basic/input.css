@@ -1,9 +1,10 @@
 .arrow {
+
   width : 28px; 
   height : 27px;
   margin : 1030px auto;
-}
-
+}  
+   
 .arrow {
   background-image: url('/arrow-next.png#elements');
 }

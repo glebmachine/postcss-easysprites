@@ -3,19 +3,25 @@ var Q = require('q');
 var lodash = require('lodash');
 var url = require('url');
 var path = require('path');
-var chalk = require('chalk');
 var async = require('async');
 var spritesmith = require('spritesmith');
 var mkdirp = require('mkdirp');
 var fs = require('fs');
 var md5 = require('md5');
+var gutil = require('gulp-util');
+
+// cache objects;
 var cache = {};
+var cacheIndex = {};
 
 // for debug 
 function debug() {
-  var data = [chalk.red('debug:')].concat(Array.prototype.slice.call(arguments));
-  console.log.apply(false, data);
-        
+  var data = ['Easysprite', gutil.colors.red('debug'),':'].concat(Array.prototype.slice.call(arguments));
+  gutil.log.apply(false, data);
+}
+function log() {
+  var data = ['Easysprite', gutil.colors.red('debug'),':'].concat(Array.prototype.slice.call(arguments));
+  gutil.log.apply(false, data);
 }
 
 /**
@@ -46,11 +52,13 @@ module.exports = postcss.plugin('postcss-easysprite', function (opts) {
 
     return function (css) {
       return Q
+        // prepare part
         .all([collectImages(css, opts), opts])
         .spread(applyGroupBy)
         .spread(function(images, opts){
           return setTokens(images, opts, css);
         })
+        // compilation part
         .spread(runSpriteSmith)
         .spread(saveSprites)
         .spread(mapSpritesProperties)
@@ -215,22 +223,20 @@ function runSpriteSmith(images, opts) {
 
         var checkstring = [];
         // collect images datechanged
+        config.spriteName = temp.replace(/^_./,'').replace(/.@/,'@');
         lodash.each(config.src, function(image){
           checkstring.push(image+'='+md5(fs.readFileSync(image).toString()));
         });
         checkstring = md5(checkstring.join('&'));
         
+        // get data from cache (avoid spritesmith)
         if (cache[checkstring]) {
-          console.log('Easysprite:', chalk.green.underline(temp.replace(/^_./,'')).replace(/.@/,'@'), 'unchanged.');
-          return Q.promise(function(resolve){
-                      resolve();
-                    })
-                    .then(function() {
-                      debug('wtf');
-                    });
+          var deferred = Q.defer();
+          var results = cache[checkstring];
+          results.isFromCache = true;
+          deferred.resolve(results);
+          return deferred.promise;
         }
-
-        cache[checkstring] = true;
 
         return Q.nfcall(spritesmith, config)
           .then(function(result) {
@@ -240,6 +246,15 @@ function runSpriteSmith(images, opts) {
             // Append info about sprite group
             result.groups = temp.map(mask(false));
 
+            // cache - clean old
+            var oldCheckstring = cacheIndex[config.spriteName];
+            if (oldCheckstring && cache[oldCheckstring]) {
+              delete cache[oldCheckstring];
+            }
+            // cache - add brand new data
+            cacheIndex[config.spriteName] = checkstring;
+            cache[checkstring] = result;
+
             return result;
           });
       })
@@ -247,6 +262,7 @@ function runSpriteSmith(images, opts) {
 
     Q.all(all)
       .then(function(results) {
+        debug('all images prepared, time to rock!');
         resolve([images, opts, results]);
       })
       .catch(function(err) {
@@ -258,8 +274,6 @@ function runSpriteSmith(images, opts) {
 }
 
 function saveSprites(images, opts, sprites) {
-  debug(images, opts, sprites);
-  return;
   return Q.Promise(function(resolve, reject) {
 
     if (!fs.existsSync(opts.spritePath)) {
@@ -270,9 +284,18 @@ function saveSprites(images, opts, sprites) {
       .map(function(sprite) {
         sprite.path = makeSpritePath(opts, sprite.groups);
 
+        // if this file is up to date
+        if (sprite.isFromCache) {
+          var deferred = Q.defer();
+          log('Easysprite:', gutil.colors.green(sprite.path), 'unchanged.');
+          deferred.resolve(sprite);
+          return deferred.promise;
+        }
+
+        // save new file version
         return Q.nfcall(fs.writeFile, sprite.path, new Buffer(sprite.image, 'binary'))
           .then(function() {
-            console.log('Easysprite:', chalk.yellow.underline(sprite.path), 'generated.');
+            log('Easysprite:', gutil.colors.yellow(sprite.path), 'generated.');
             return sprite;
           });
       })
@@ -326,7 +349,6 @@ function updateReferences(images, opts, sprites, css) {
 
         if (image) {
           // Generate correct ref to the sprite
-          debug(opts.stylesheetPath, image.spritePath); 
           image.spriteRef = path.relative(opts.stylesheetPath, image.spritePath);
           image.spriteRef = image.spriteRef.split(path.sep).join('/');
 

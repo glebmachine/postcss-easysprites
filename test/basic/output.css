@@ -1,9 +1,10 @@
 .arrow {
+
   width : 28px; 
   height : 27px;
   margin : 1030px auto;
-}
-
+}  
+   
 .arrow { background-image : url(sprites/elements.png); background-position : 0 0;
 }
 .arrow:hover { background-image : url(sprites/elements.png); background-position : -28px 0;

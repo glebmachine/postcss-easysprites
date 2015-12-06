@@ -25,8 +25,10 @@ gulp.task('project:basic', function(){
 });
 
 gulp.task('project', ['project:basic']);
-gulp.task('default', ['project:basic']);
+gulp.task('default', ['watch']);
 
 gulp.task('watch', function() {
-    gulp.watch('test/{**/*,*.*}', ['project:basic']);
+    gulp.watch([
+      'test/basic/input.css',
+    ], ['project:basic']);
 });
