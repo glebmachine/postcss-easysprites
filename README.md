@@ -3,16 +3,11 @@
 # PostCSS Easysprite [![Build Status][ci-img]][ci]
 [PostCSS] plugin that generate sprites, properly (inspired by postcss-sprites).
 [PostCSS]: https://github.com/postcss/postcss
-[ci-img]:  https://travis-ci.org/glebmachine/postcss-easysprite.svg
-[ci]:      https://travis-ci.org/glebmachine/postcss-easysprite
-
-## *Disclaimer!* 
-Plugin in alpha version. Use it on your own risk!
-Fill free to file an issue / feature request
-
+[ci-img]:  https://travis-ci.org/glebmachine/postcss-easysprites.svg
+[ci]:      https://travis-ci.org/glebmachine/postcss-easysprites
 
 ## Usage
-Just append `#spritename` to the end of image url. No complicated mechanism or strict folder structure. Just one simple hash
+Just append `#spritename` to the end of image url. No complicated mechanism or strict folder structure.
 
 ## Retina
 Plugin moving all retina images, with any ratio to separate sprite. To achieve this all retina images should be declarated with `@2x` suffix (where number is image ratio).
