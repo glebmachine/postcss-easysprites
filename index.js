@@ -14,13 +14,14 @@ var gutil = require('gulp-util');
 var cache = {};
 var cacheIndex = {};
 
-// for debug 
+// for debug
 function debug() {
-  var data = ['Easysprite', gutil.colors.red('debug'),':'].concat(Array.prototype.slice.call(arguments));
+  var data = [gutil.colors.red('debug'), ':']
+    .concat(Array.prototype.slice.call(arguments));
   gutil.log.apply(false, data);
 }
 function log() {
-  var data = ['Easysprite'].concat(Array.prototype.slice.call(arguments));
+  var data = Array.prototype.slice.call(arguments);
   gutil.log.apply(false, data);
 }
 
@@ -36,6 +37,7 @@ var BACKGROUND_IMAGE  = 'background-image';
 
 module.exports = postcss.plugin('postcss-easysprite', function (opts) {
     opts = opts || {};
+    debug();
 
     // opts
     opts = opts || {};
@@ -198,7 +200,6 @@ function setTokens(images, opts, css) {
 
 function runSpriteSmith(images, opts) {
   return Q.Promise(function(resolve, reject) {
-  debug(images);
     var all = lodash
       .chain(images)
       .groupBy(function (image) {
@@ -422,8 +423,6 @@ function resolveUrl(image, opts) {
   if (/^\//.test(image.url)) {
     results = path.resolve(opts.imagePath, image.url.replace(/^\//,''));
   } else {
-    debug(opts.stylesheetPath, image.url.replace(/^\//,''));
-    debug(image.url, gutil.colors.red('>>'), results);
     results = path.resolve(image.stylesheetPath, image.url);
   }
 

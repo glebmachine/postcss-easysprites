@@ -32,10 +32,11 @@
     "ava": "^0.4.2",
     "chai": "^3.4.1",
     "eslint": "^1.9.0",
+    "gulp-eslint": "^1.1.1",
     "gulp-mocha": "^2.2.0",
     "gulp-rename": "^1.2.2"
   },
   "scripts": {
-    "test": "ava && eslint *.js"
+    "test": "gulp test"
   }
 }
