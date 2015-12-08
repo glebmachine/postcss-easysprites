@@ -26,7 +26,7 @@ Plugin support relative/absolute paths on input file, but still can generate onl
 ## Plugin options
  - `imagePath` path for resolve absolute images
  - `spritePath` path for write completed sprites
- - `stylesheetPath` path for resolve relative images (css file folder used for default)
+ - `stylesheetPath` path for resolve relative images (overriding options, css file folder used for default)
 
 ## Input example
 ```css

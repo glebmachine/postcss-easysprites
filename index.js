@@ -37,12 +37,14 @@ var BACKGROUND_IMAGE  = 'background-image';
 module.exports = postcss.plugin('postcss-easysprite', function (opts) {
     opts = opts || {};
 
-    // Work with options here
+    // opts
     opts = opts || {};
-    opts.imagePath = opts.imagePath ? process.cwd() + opts.imagePath : process.cwd();
     opts.groupBy = opts.groupBy || [];
-    opts.stylesheetPath = opts.stylesheetPath ? process.cwd()+opts.stylesheetPath : false;
-    opts.spritePath = opts.spritePath ? process.cwd()+opts.spritePath : false;
+    opts.padding = opts.padding ? opts.padding : 20;
+    
+    // paths
+    opts.imagePath = path.resolve(process.cwd(), opts.imagePath||'');
+    opts.spritePath = path.resolve(process.cwd(), opts.spritePath||'');
 
     // Group retina images
     opts.groupBy.unshift(function(image) {
@@ -51,6 +53,8 @@ module.exports = postcss.plugin('postcss-easysprite', function (opts) {
     });
 
     return function (css) {
+      // if file path 
+
       return Q
         // prepare part
         .all([collectImages(css, opts), opts])
@@ -71,14 +75,16 @@ module.exports = postcss.plugin('postcss-easysprite', function (opts) {
 
 function collectImages(css, opts) {
   var images = [];
-  if (!opts.stylesheetPath) { 
-    opts.stylesheetPath = path.dirname(css.source.input.file);
+  var stylesheetPath = opts.stylesheetPath || path.dirname(css.source.input.file);
+  if (!stylesheetPath) {
+    throw 'Stylesheets path is undefined, please use option stylesheetPath!';
   }
 
   css.eachRule(function(rule) {
     var image = {
       path    : null,
       url     : null,
+      stylesheetPath : stylesheetPath,
       ratio   : 1,
       groups  : [],
       token   : ''
@@ -262,7 +268,6 @@ function runSpriteSmith(images, opts) {
 
     Q.all(all)
       .then(function(results) {
-        debug('all images prepared, time to rock!');
         resolve([images, opts, results]);
       })
       .catch(function(err) {
@@ -283,6 +288,7 @@ function saveSprites(images, opts, sprites) {
       .chain(sprites)
       .map(function(sprite) {
         sprite.path = makeSpritePath(opts, sprite.groups);
+
 
         // if this file is up to date
         if (sprite.isFromCache) {
@@ -349,7 +355,7 @@ function updateReferences(images, opts, sprites, css) {
 
         if (image) {
           // Generate correct ref to the sprite
-          image.spriteRef = path.relative(opts.stylesheetPath, image.spritePath);
+          image.spriteRef = path.relative(image.stylesheetPath, image.spritePath);
           image.spriteRef = image.spriteRef.split(path.sep).join('/');
 
           backgroundImage = postcss.decl({
@@ -394,17 +400,9 @@ function updateReferences(images, opts, sprites, css) {
   });
 }
 
-/**
- * Generate a path to the sprite.
- *
- * @param  {Object} opts
- * @param  {Array}  groups
- * @return {String}
- */
 function makeSpritePath(opts, groups) {
-
-  var base   = opts.spritePath;
-  var file = base + groups.join('.') + '.png';
+  var base = opts.spritePath;
+  var file = path.resolve(base, groups.join('.')+'.png');
   return file.replace('.@', '@');
 }
 
@@ -421,10 +419,13 @@ function mask(toggle) {
 function resolveUrl(image, opts) {
   var results;
   if (/^\//.test(image.url)) {
-    results = path.resolve(opts.imagePath+image.url);
+    results = path.resolve(opts.imagePath, image.url.replace(/^\//,''));
   } else {
-    results = path.resolve(opts.stylesheetPath, image.url);
+    debug(opts.stylesheetPath, image.url.replace(/^\//,''));
+    debug(image.url, gutil.colors.red('>>'), results);
+    results = path.resolve(image.stylesheetPath, image.url);
   }
+
 
   // get rid of get params and hash;
   return results.split('#')[0].split('?')[0];

@@ -16,8 +16,8 @@ gulp.task('project:basic', function(){
     gulp.src('./test/basic/input.css')
       .pipe(postcss([
         easysprite({
-          imagePath:'/test/basic/images/', 
-          spritePath: '/test/basic/sprites/'
+          imagePath:'./test/basic/images', 
+          spritePath: './test/basic/sprites'
         })
       ]))
       .pipe(rename('output.css'))
