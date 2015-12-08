@@ -198,6 +198,7 @@ function setTokens(images, opts, css) {
 
 function runSpriteSmith(images, opts) {
   return Q.Promise(function(resolve, reject) {
+  debug(images);
     var all = lodash
       .chain(images)
       .groupBy(function (image) {
