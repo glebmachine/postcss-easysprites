@@ -90,8 +90,8 @@ Plugin support relative/absolute paths on input file, but still can generate onl
 ```js
 postcss([ 
     easysprite({
-        imagePath:'/public/images/', 
-        spritePath: '/public/sprites/'
+        imagePath:'./public/images', 
+        spritePath: './public/sprites'
     })
 ])
 ```
