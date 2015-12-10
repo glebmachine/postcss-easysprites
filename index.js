@@ -37,7 +37,6 @@ var BACKGROUND_IMAGE  = 'background-image';
 
 module.exports = postcss.plugin('postcss-easysprite', function (opts) {
     opts = opts || {};
-    debug();
 
     // opts
     opts = opts || {};
