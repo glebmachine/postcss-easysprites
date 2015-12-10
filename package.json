@@ -1,6 +1,6 @@
 {
   "name": "postcss-easysprites",
-  "version": "0.0.1",
+  "version": "0.1.2",
   "description": "PostCSS plugin that generate sprites, like postcss-sprites, but proper way",
   "keywords": [
     "postcss",
