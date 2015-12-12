@@ -34,7 +34,7 @@ gulp.task('linting', function() {
     .pipe(jshint())                           // hint (optional)
     .pipe(jscs())                             // enforce style guide
     .pipe(stylish.combineWithHintResults())   // combine with jshint results
-    .pipe(jshint.reporter('stylish')); // use any jshint reporter to log hint
+    .pipe(jshint.reporter('jshint-stylish')); // use any jshint reporter to log hint
 });
 
 
