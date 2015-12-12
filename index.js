@@ -29,7 +29,7 @@ var GROUP_MASK        = '*';
 var BACKGROUND        = 'background';
 var BACKGROUND_IMAGE  = 'background-image';
 
-module.exports = postcss.plugin('postcss-easysprite', function(opts) {
+module.exports = postcss.plugin('postcss-easysprites', function(opts) {
   opts = opts || {};
 
   // opts
@@ -99,7 +99,8 @@ function collectImages(css, opts) {
         return;
       }
 
-      image.groups = [imageUrl.hash.replace('#', '')];
+      image.hash = imageUrl.hash.replace('#', '');
+      image.groups = [image.hash];
 
       // Perform search for retina
       if (isRetinaImage(image.url)) {
@@ -108,6 +109,18 @@ function collectImages(css, opts) {
 
       // Get the path to the image.
       image.path = resolveUrl(image, opts);
+
+      // file exists
+      if (!fs.existsSync(image.path)) {
+        log('Easysprites:', gutil.colors.red(image.path), 'file unreachable or not exists');
+
+        // remove hash from link
+        lodash.each(rule.nodes, function(node) {
+          node.value = node.value.replace('#' + image.hash, '');
+        });
+
+        return rule;
+      }
 
       images.push(image);
     }
@@ -295,7 +308,7 @@ function saveSprites(images, opts, sprites) {
         // if this file is up to date
         if (sprite.isFromCache) {
           var deferred = Q.defer();
-          log('Easysprite:', gutil.colors.green(sprite.path), 'unchanged.');
+          log('Easysprites:', gutil.colors.green(sprite.path), 'unchanged.');
           deferred.resolve(sprite);
           return deferred.promise;
         }
@@ -303,7 +316,7 @@ function saveSprites(images, opts, sprites) {
         // save new file version
         return Q.nfcall(fs.writeFile, sprite.path, new Buffer(sprite.image, 'binary'))
           .then(function() {
-            log('Easysprite:', gutil.colors.yellow(sprite.path), 'generated.');
+            log('Easysprites:', gutil.colors.yellow(sprite.path), 'generated.');
             return sprite;
           });
       })

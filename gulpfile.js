@@ -36,6 +36,11 @@ gulp.task('linting', function() {
     .pipe(stylish.combineWithHintResults())   // combine with jshint results
     .pipe(jshint.reporter('jshint-stylish')); // use any jshint reporter to log hint
 });
+gulp.task('runtest', function() {
+  var mocha = require('gulp-mocha');
+  return gulp.src('test/basic.js', { read: false })
+    .pipe(mocha());
+});
 
 
 gulp.task('watch', function() {
@@ -46,4 +51,4 @@ gulp.task('watch', function() {
 
 gulp.task('project', ['project:basic']);
 gulp.task('default', ['watch']);
-gulp.task('test', ['linting']);
+gulp.task('test', ['linting', 'runtest']);
