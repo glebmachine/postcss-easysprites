@@ -14,12 +14,6 @@ var gutil = require('gulp-util');
 var cache = {};
 var cacheIndex = {};
 
-// for debug
-function debug() {
-  var data = [gutil.colors.red('debug'), ':']
-    .concat(Array.prototype.slice.call(arguments));
-  gutil.log.apply(false, data);
-}
 function log() {
   var data = Array.prototype.slice.call(arguments);
   gutil.log.apply(false, data);
@@ -35,34 +29,37 @@ var GROUP_MASK        = '*';
 var BACKGROUND        = 'background';
 var BACKGROUND_IMAGE  = 'background-image';
 
-module.exports = postcss.plugin('postcss-easysprite', function (opts) {
-    opts = opts || {};
+module.exports = postcss.plugin('postcss-easysprite', function(opts) {
+  opts = opts || {};
 
-    // opts
-    opts = opts || {};
-    opts.groupBy = opts.groupBy || [];
-    opts.padding = opts.padding ? opts.padding : 20;
-    
-    // paths
-    opts.imagePath = path.resolve(process.cwd(), opts.imagePath||'');
-    opts.spritePath = path.resolve(process.cwd(), opts.spritePath||'');
+  // opts
+  opts = opts || {};
+  opts.groupBy = opts.groupBy || [];
+  opts.padding = opts.padding ? opts.padding : 20;
 
-    // Group retina images
-    opts.groupBy.unshift(function(image) {
-      if (image.ratio>1) { return '@' + image.ratio + 'x'; }
+  // paths
+  opts.imagePath = path.resolve(process.cwd(), opts.imagePath || '');
+  opts.spritePath = path.resolve(process.cwd(), opts.spritePath || '');
+
+  // Group retina images
+  opts.groupBy.unshift(function(image) {
+      if (image.ratio > 1) { return '@' + image.ratio + 'x'; }
+
       return null;
     });
 
-    return function (css) {
-      // if file path 
+  return function(css) {
+      // if file path
 
       return Q
+
         // prepare part
         .all([collectImages(css, opts), opts])
         .spread(applyGroupBy)
-        .spread(function(images, opts){
+        .spread(function(images, opts) {
           return setTokens(images, opts, css);
         })
+
         // compilation part
         .spread(runSpriteSmith)
         .spread(saveSprites)
@@ -73,7 +70,6 @@ module.exports = postcss.plugin('postcss-easysprite', function (opts) {
     };
 });
 
-
 function collectImages(css, opts) {
   var images = [];
   var stylesheetPath = opts.stylesheetPath || path.dirname(css.source.input.file);
@@ -83,12 +79,12 @@ function collectImages(css, opts) {
 
   css.eachRule(function(rule) {
     var image = {
-      path    : null,
-      url     : null,
-      stylesheetPath : stylesheetPath,
-      ratio   : 1,
-      groups  : [],
-      token   : ''
+      path: null,
+      url: null,
+      stylesheetPath: stylesheetPath,
+      ratio: 1,
+      groups: [],
+      token: '',
     };
 
     if (hasImageInRule(rule.toString())) {
@@ -103,7 +99,7 @@ function collectImages(css, opts) {
         return;
       }
 
-      image.groups = [imageUrl.hash.replace('#','')];
+      image.groups = [imageUrl.hash.replace('#', '')];
 
       // Perform search for retina
       if (isRetinaImage(image.url)) {
@@ -135,6 +131,7 @@ function applyGroupBy(images, opts) {
           .catch(done);
       }, next);
     }, function(err, images) {
+
       if (err) {
         return reject(err);
       }
@@ -172,7 +169,7 @@ function setTokens(images, opts, css) {
               rule.append({
                 prop: 'background-color',
                 value: color[0],
-                before: ' '
+                before: ' ',
               });
             }
           }
@@ -182,7 +179,7 @@ function setTokens(images, opts, css) {
               text: image.url,
               before: ' ',
               left: '@replace|',
-              right: ''
+              right: '',
             });
 
             // Replace the declaration with a comment token
@@ -201,7 +198,7 @@ function runSpriteSmith(images, opts) {
   return Q.Promise(function(resolve, reject) {
     var all = lodash
       .chain(images)
-      .groupBy(function (image) {
+      .groupBy(function(image) {
         var temp;
 
         temp = image.groups.map(mask(true));
@@ -211,7 +208,7 @@ function runSpriteSmith(images, opts) {
       })
       .map(function(images, temp) {
         var config = lodash.merge({}, opts, {
-          src: lodash.pluck(images, 'path')
+          src: lodash.pluck(images, 'path'),
         });
         var ratio;
 
@@ -229,17 +226,20 @@ function runSpriteSmith(images, opts) {
         }
 
         var checkstring = [];
+
         // collect images datechanged
-        config.spriteName = temp.replace(/^_./,'').replace(/.@/,'@');
-        lodash.each(config.src, function(image){
-          checkstring.push(image+'='+md5(fs.readFileSync(image).toString()));
+        config.spriteName = temp.replace(/^_./, '').replace(/.@/, '@');
+        lodash.each(config.src, function(image) {
+          checkstring.push(image + '=' + md5(fs.readFileSync(image).toString()));
         });
+
         checkstring = md5(checkstring.join('&'));
-        
+
         // get data from cache (avoid spritesmith)
         if (cache[checkstring]) {
           var deferred = Q.defer();
           var results = cache[checkstring];
+
           results.isFromCache = true;
           deferred.resolve(results);
           return deferred.promise;
@@ -258,6 +258,7 @@ function runSpriteSmith(images, opts) {
             if (oldCheckstring && cache[oldCheckstring]) {
               delete cache[oldCheckstring];
             }
+
             // cache - add brand new data
             cacheIndex[config.spriteName] = checkstring;
             cache[checkstring] = result;
@@ -285,11 +286,11 @@ function saveSprites(images, opts, sprites) {
     if (!fs.existsSync(opts.spritePath)) {
       mkdirp.sync(opts.spritePath);
     }
+
     var all = lodash
       .chain(sprites)
       .map(function(sprite) {
         sprite.path = makeSpritePath(opts, sprite.groups);
-
 
         // if this file is up to date
         if (sprite.isFromCache) {
@@ -319,7 +320,6 @@ function saveSprites(images, opts, sprites) {
   });
 }
 
-
 /**
  * Map properties for every image.
  *
@@ -331,12 +331,12 @@ function saveSprites(images, opts, sprites) {
 function mapSpritesProperties(images, opts, sprites) {
   return Q.Promise(function(resolve) {
     sprites = lodash.map(sprites, function(sprite) {
-      return lodash.map(sprite.coordinates, function (coordinates, imagePath) {
+      return lodash.map(sprite.coordinates, function(coordinates, imagePath) {
 
         return lodash.merge(lodash.find(images, { path: imagePath }), {
           coordinates: coordinates,
           spritePath: sprite.path,
-          properties: sprite.properties
+          properties: sprite.properties,
         });
       });
     });
@@ -361,12 +361,12 @@ function updateReferences(images, opts, sprites, css) {
 
           backgroundImage = postcss.decl({
             prop: 'background-image',
-            value: getBackgroundImageUrl(image)
+            value: getBackgroundImageUrl(image),
           });
 
           backgroundPosition = postcss.decl({
             prop: 'background-position',
-            value: getBackgroundPosition(image)
+            value: getBackgroundPosition(image),
           });
 
           // Replace the comment and append necessary properties.
@@ -378,17 +378,17 @@ function updateReferences(images, opts, sprites, css) {
             ['height', 'width'].forEach(function(prop) {
               rule.insertAfter(backgroundImage, postcss.decl({
                 prop: prop,
-                value: (image.ratio>1 ? image.coordinates[prop] / image.ratio : image.coordinates[prop]) + 'px'
+                value: (image.ratio > 1 ? image.coordinates[prop] / image.ratio : image.coordinates[prop]) + 'px',
               }));
             });
           }
 
           rule.insertAfter(backgroundImage, backgroundPosition);
 
-          if (image.ratio>1) {
+          if (image.ratio > 1) {
             backgroundSize = postcss.decl({
               prop: 'background-size',
-              value: getBackgroundSize(image)
+              value: getBackgroundSize(image),
             });
 
             backgroundPosition.parent.insertAfter(backgroundPosition, backgroundSize);
@@ -403,10 +403,9 @@ function updateReferences(images, opts, sprites, css) {
 
 function makeSpritePath(opts, groups) {
   var base = opts.spritePath;
-  var file = path.resolve(base, groups.join('.')+'.png');
+  var file = path.resolve(base, groups.join('.') + '.png');
   return file.replace('.@', '@');
 }
-
 
 function mask(toggle) {
   var input  = new RegExp('[' + (toggle ? GROUP_DELIMITER : GROUP_MASK) + ']', 'gi');
@@ -420,25 +419,13 @@ function mask(toggle) {
 function resolveUrl(image, opts) {
   var results;
   if (/^\//.test(image.url)) {
-    results = path.resolve(opts.imagePath, image.url.replace(/^\//,''));
+    results = path.resolve(opts.imagePath, image.url.replace(/^\//, ''));
   } else {
     results = path.resolve(image.stylesheetPath, image.url);
   }
 
-
   // get rid of get params and hash;
   return results.split('#')[0].split('?')[0];
-}
-
-/**
- * Check that the declaration is background.
- * E.g. background-image, background, etc.
- *
- * @param  {Object}  decl
- * @return {Boolean}
- */
-function isBackgroundDecl(decl) {
-  return /^background/gi.test(decl.prop);
 }
 
 /**
@@ -514,8 +501,8 @@ function getBackgroundImageUrl(image) {
  * @return {String}
  */
 function getBackgroundPosition(image) {
-  var x        = -1 * (image.ratio>1 ? image.coordinates.x / image.ratio : image.coordinates.x);
-  var y        = -1 * (image.ratio>1 ? image.coordinates.y / image.ratio : image.coordinates.y);
+  var x = -1 * (image.ratio > 1 ? image.coordinates.x / image.ratio : image.coordinates.x);
+  var y = -1 * (image.ratio > 1 ? image.coordinates.y / image.ratio : image.coordinates.y);
   var template = lodash.template('<%= (x ? x + "px" : x) %> <%= (y ? y + "px" : y) %>');
 
   return template({ x: x, y: y });
@@ -528,13 +515,12 @@ function getBackgroundPosition(image) {
  * @return {String}
  */
 function getBackgroundSize(image) {
-  var x        = image.properties.width / image.ratio;
-  var y        = image.properties.height / image.ratio;
+  var x = image.properties.width / image.ratio;
+  var y = image.properties.height / image.ratio;
   var template = lodash.template('<%= x %>px <%= y %>px');
 
   return template({ x: x, y: y });
 }
-
 
 /**
  * Check whether the image is retina.
@@ -566,6 +552,6 @@ function getRetinaRatio(url) {
  */
 function areAllRetina(images) {
   return lodash.every(images, function(image) {
-    return image.ratio>1;
+    return image.ratio > 1;
   });
 }
