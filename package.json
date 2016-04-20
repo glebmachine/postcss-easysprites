@@ -1,49 +1,49 @@
 {
-  "name": "postcss-easysprites",
-  "version": "0.1.3",
-  "description": "PostCSS plugin that generate sprites, like postcss-sprites, but proper way",
-  "keywords": [
-    "postcss",
-    "css",
-    "postcss-plugin",
-    "sprite",
-    "sprites"
-  ],
-  "author": "Gleb Mikheev <mikheev@betaagency.ru>",
-  "license": "MIT",
-  "repository": "glebmachine/postcss-easysprites",
-  "bugs": {
-    "url": "https://github.com/glebmachine/postcss-easysprites/issues"
-  },
-  "homepage": "https://github.com/glebmachine/postcss-easysprites",
-  "dependencies": {
-    "async": "^1.5.0",
-    "gulp-postcss": "^6.0.1",
-    "gulp-print": "^2.0.1",
-    "gulp-util": "^3.0.7",
-    "lodash": "^3.10.1",
-    "md5": "^2.0.0",
-    "mkdirp": "^0.5.1",
-    "postcss": "^5.0.10",
-    "q": "^1.4.1",
-    "spritesmith": "^1.5.0"
-  },
-  "devDependencies": {
-    "ava": "^0.4.2",
-    "chai": "^3.4.1",
-    "gulp": "^3.9.0",
-    "gulp-eslint": "^1.1.1",
-    "gulp-jscs": "^3.0.2",
-    "gulp-jscs-stylish": "^1.3.0",
-    "gulp-jshint": "^2.0.0",
-    "gulp-mocha": "^2.2.0",
-    "gulp-rename": "^1.2.2",
-    "jscs": "^2.7.0",
-    "jshint": "^2.8.0",
-    "jshint-stylish": "^2.1.0",
-    "tape": "^4.2.2"
-  },
-  "scripts": {
-    "test": "gulp test"
-  }
+    "name": "postcss-easysprites",
+    "version": "0.1.4",
+    "description": "PostCSS plugin that generate sprites, like postcss-sprites, but proper way",
+    "keywords": [
+        "postcss",
+        "css",
+        "postcss-plugin",
+        "sprite",
+        "sprites"
+    ],
+    "author": "Gleb Mikheev <mikheev@betaagency.ru>",
+    "license": "MIT",
+    "repository": "glebmachine/postcss-easysprites",
+    "bugs": {
+        "url": "https://github.com/glebmachine/postcss-easysprites/issues"
+    },
+    "homepage": "https://github.com/glebmachine/postcss-easysprites",
+    "dependencies": {
+        "async": "^1.5.0",
+        "gulp-postcss": "^6.0.1",
+        "gulp-print": "^2.0.1",
+        "gulp-util": "^3.0.7",
+        "lodash": "^3.10.1",
+        "md5": "^2.0.0",
+        "mkdirp": "^0.5.1",
+        "postcss": "^5.0.10",
+        "q": "^1.4.1",
+        "spritesmith": "^1.5.0"
+    },
+    "devDependencies": {
+        "ava": "^0.4.2",
+        "chai": "^3.4.1",
+        "gulp": "^3.9.0",
+        "gulp-eslint": "^1.1.1",
+        "gulp-jscs": "^3.0.2",
+        "gulp-jscs-stylish": "^1.3.0",
+        "gulp-jshint": "^2.0.0",
+        "gulp-mocha": "^2.2.0",
+        "gulp-rename": "^1.2.2",
+        "jscs": "^2.7.0",
+        "jshint": "^2.8.0",
+        "jshint-stylish": "^2.1.0",
+        "tape": "^4.2.2"
+    },
+    "scripts": {
+        "test": "gulp test"
+    }
 }
