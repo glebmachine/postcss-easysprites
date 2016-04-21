@@ -171,7 +171,7 @@ function setTokens(images, opts, css) {
           // our plugin will insert them when
           // they are necessary.
           rule.walkDecls(/^background-(repeat|size|position)$/, function(decl) {
-            decl.removeSelf();
+            decl.remove();
           });
 
           if (decl.prop === BACKGROUND) {
@@ -181,7 +181,7 @@ function setTokens(images, opts, css) {
             if (color && color.length === 1) {
               rule.prop = 'background-color';
               rule.value = color[0];
-              rule.raws.before = ' ';
+              rule.before = ' ';
             }
           }
 
