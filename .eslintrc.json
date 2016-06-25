@@ -1,0 +1,13 @@
+
+{
+  "max-len": 0,
+  "rules": {
+    "indent": ["error", 2, { "VariableDeclarator": 1 }],
+    "global-require": 0,
+    "func-names": 0,
+    "prefer-rest-params": 1,
+    "strict": 1,
+    "no-param-reassign": 0
+  }
+}
+

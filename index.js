@@ -43,31 +43,27 @@ module.exports = postcss.plugin('postcss-easysprites', function (opts) {
 
   // Group retina images
   opts.groupBy.unshift(function (image) {
-      if (image.ratio > 1) { return '@' + image.ratio + 'x'; }
-
-      return null;
-    });
+    if (image.ratio > 1) { return '@' + image.ratio + 'x'; }
+    return null;
+  });
 
   return function (css) {
-      // if file path
-
-      return Q
-
-        // prepare part
-        .all([collectImages(css, opts), opts])
-        .spread(applyGroupBy)
-        .spread(function (images, opts) {
-          return setTokens(images, opts, css);
-        })
-
-        // compilation part
-        .spread(runSpriteSmith)
-        .spread(saveSprites)
-        .spread(mapSpritesProperties)
-        .spread(function (images, opts, sprites) {
-          return updateReferences(images, opts, sprites, css);
-        });
-    };
+    // if file path
+    return Q
+      // prepare part
+      .all([collectImages(css, opts), opts])
+      .spread(applyGroupBy)
+      .spread(function (images, opts) {
+        return setTokens(images, opts, css);
+      })
+      // compilation part
+      .spread(runSpriteSmith)
+      .spread(saveSprites)
+      .spread(mapSpritesProperties)
+      .spread(function (images, opts, sprites) {
+        return updateReferences(images, opts, sprites, css);
+      });
+  };
 });
 
 function collectImages(css, opts) {
