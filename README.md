@@ -1,10 +1,7 @@
 
 
-# PostCSS Easysprite [![Build Status][ci-img]][ci]
-[PostCSS] plugin that generate sprites, properly (inspired by postcss-sprites).
-[PostCSS]: https://github.com/postcss/postcss
-[ci-img]:  https://travis-ci.org/glebmachine/postcss-easysprites.svg
-[ci]:      https://travis-ci.org/glebmachine/postcss-easysprites
+# PostCSS Easysprite [![Build Status](https://travis-ci.org/glebmachine/postcss-easysprites.svg?branch=master)](https://travis-ci.org/glebmachine/postcss-easysprites) [![npm version](https://badge.fury.io/js/postcss-easysprites.svg)](http://badge.fury.io/js/postcss-easysprites)
+
 
 ## Usage
 Just append `#spritename` to the end of image url. No complicated mechanism or strict folder structure.
