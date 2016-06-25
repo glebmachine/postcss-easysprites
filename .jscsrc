@@ -2,6 +2,5 @@
   "preset": "airbnb",
   "validateIndentation": 2,
   "disallowMultipleVarDecl": false,
-  "requireMultipleVarDecl": false,
-  "esnext": true
+  "requireMultipleVarDecl": false
 }
