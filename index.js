@@ -126,7 +126,7 @@ function collectImages(css, opts) {
     }
   });
 
-  return images;
+  return lodash.uniqWith(images, lodash.isEqual);
 }
 
 function applyGroupBy(images, opts) {
