@@ -122,7 +122,7 @@ function collectImages(css, opts) {
     }
   });
 
-  return images;
+  return lodash.uniqWith(images, lodash.isEqual);
 }
 
 function applyGroupBy(images, opts) {
@@ -217,7 +217,7 @@ function runSpriteSmith(images, opts) {
       })
       .map(function (images, temp) {
         var config = lodash.merge({}, opts, {
-          src: lodash.pluck(images, 'path'),
+          src: lodash.map(images, 'path'),
         });
         var ratio;
 
