@@ -221,7 +221,7 @@ function runSpriteSmith(images, opts) {
       })
       .map(function (images, temp) {
         var config = lodash.merge({}, opts, {
-          src: lodash.pluck(images, 'path'),
+          src: lodash.map(images, 'path'),
         });
         var ratio;
 
