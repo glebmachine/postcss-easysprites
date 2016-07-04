@@ -4,7 +4,7 @@ var lodash = require('lodash');
 var url = require('url');
 var path = require('path');
 var async = require('async');
-var spritesmith = require('spritesmith');
+var spritesmith = require('spritesmith').run;
 var mkdirp = require('mkdirp');
 var fs = require('fs');
 var md5 = require('md5');
@@ -225,8 +225,8 @@ function runSpriteSmith(images, opts) {
         if (areAllRetina(images)) {
           ratio = lodash
             .chain(images)
-            .flatten('ratio')
-            .unique()
+            .flatMap('ratio')
+            .uniq()
             .value();
 
           if (ratio.length === 1) {
