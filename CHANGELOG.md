@@ -1,3 +1,11 @@
+#0.1.7
+
+- Package deps fixed, huge thanks and lots of beer for [Daniel Lindenkreuz @dlindenkreuz](http://github.com/dlindenkreuz))
+
+#0.1.6
+
+- Package deps updated (broken!) 
+
 #0.1.5
 
 - Fixes improper rule property in background-color extraction function.
