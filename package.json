@@ -27,7 +27,7 @@
     "spritesmith": "3.1.0"
   },
   "devDependencies": {
-    "chai": "3.4.1",
+    "chai": "3.5.0",
     "eslint": "2.13.1",
     "eslint-config-airbnb": "9.0.1",
     "eslint-plugin-import": "1.9.2",
