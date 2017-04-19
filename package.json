@@ -31,7 +31,7 @@
     "eslint": "2.13.1",
     "eslint-config-airbnb": "9.0.1",
     "eslint-plugin-import": "1.9.2",
-    "eslint-watch": "2.1.11",
+    "eslint-watch": "2.1.13",
     "git-hooks": "1.0.2",
     "gulp": "3.9.0",
     "gulp-eslint": "2.0.0",
