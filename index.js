@@ -361,6 +361,7 @@ function updateReferences(images, opts, sprites, css) {
 
       // Manipulate only token comments
       if (isToken(comment)) {
+        var rule = comment.parent;
         image = lodash.find(images, { url: comment.text });
 
         if (image) {
@@ -378,11 +379,13 @@ function updateReferences(images, opts, sprites, css) {
             value: getBackgroundPosition(image),
           });
 
+
+
           // Replace the comment and append necessary properties.
           comment.replaceWith(backgroundImage);
 
           // Output the dimensions
-          rule = backgroundImage.parent;
+
           if (opts.outputDimensions) {
             ['height', 'width'].forEach(function (prop) {
               rule.insertAfter(
@@ -405,7 +408,7 @@ function updateReferences(images, opts, sprites, css) {
               value: getBackgroundSize(image),
             });
 
-            backgroundPosition.parent.insertAfter(backgroundPosition, backgroundSize);
+            rule.insertAfter(backgroundPosition, backgroundSize);
           }
         }
       }
