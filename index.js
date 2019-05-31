@@ -44,18 +44,22 @@ module.exports = postcss.plugin('postcss-easysprites', function (opts) {
   // Group retina images
   opts.groupBy.unshift(function (image) {
     if (image.ratio > 1) { return '@' + image.ratio + 'x'; }
+
     return null;
   });
 
   return function (css) {
+
     // if file path
     return Q
+
       // prepare part
       .all([collectImages(css, opts), opts])
       .spread(applyGroupBy)
       .spread(function (images, opts) {
         return setTokens(images, opts, css);
       })
+
       // compilation part
       .spread(runSpriteSmith)
       .spread(saveSprites)
@@ -361,7 +365,7 @@ function updateReferences(images, opts, sprites, css) {
 
       // Manipulate only token comments
       if (isToken(comment)) {
-        var rule = comment.parent;
+        rule = comment.parent;
         image = lodash.find(images, { url: comment.text });
 
         if (image) {
@@ -378,8 +382,6 @@ function updateReferences(images, opts, sprites, css) {
             prop: 'background-position',
             value: getBackgroundPosition(image),
           });
-
-
 
           // Replace the comment and append necessary properties.
           comment.replaceWith(backgroundImage);
