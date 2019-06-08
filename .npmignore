@@ -1,9 +1,15 @@
-.gitignore
-
+# Node files/folders.
 node_modules/
 npm-debug.log
 
+# Test files/folders.
 test/
 .travis.yml
-
 gulpfile.js
+
+# Lint/git configuration files.
+.gitignore
+.editorconfig
+.eslintignore
+.eslintrc.js
+.prettierrc.js

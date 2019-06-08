@@ -360,9 +360,9 @@ function saveSprites(images, opts, sprites) {
 /**
  * Map properties for every image.
  *
- * @param  {Array}  images
- * @param  {Object} opts
- * @param  {Array}  sprites
+ * @param {Array} images
+ * @param {Object} opts
+ * @param {Array} sprites
  * @return {Promise}
  */
 function mapSpritesProperties(images, opts, sprites) {
@@ -480,7 +480,7 @@ function resolveUrl(image, opts) {
 /**
  * Check for url in the given rule.
  *
- * @param  {String}  rule
+ * @param {String} rule
  * @return {Boolean}
  */
 function hasImageInRule(rule) {
@@ -490,7 +490,7 @@ function hasImageInRule(rule) {
 /**
  * Extract the path to image from the url in given rule.
  *
- * @param  {String} rule
+ * @param {String} rule
  * @return {String}
  */
 function getImageUrl(rule) {
@@ -502,7 +502,7 @@ function getImageUrl(rule) {
 /**
  * Extract the background color from declaration.
  *
- * @param  {Object} decl
+ * @param {Object} decl
  * @return {String|null}
  */
 function getColor(decl) {
@@ -524,7 +524,7 @@ function getColor(decl) {
  * Check whether the comment is token that
  * should be replaced with CSS declarations.
  *
- * @param  {Object}  comment
+ * @param {Object} comment
  * @return {Boolean}
  */
 function isToken(comment) {
@@ -534,7 +534,7 @@ function isToken(comment) {
 /**
  * Return the value for background-image property.
  *
- * @param  {Object} image
+ * @param {Object} image
  * @return {String}
  */
 function getBackgroundImageUrl(image) {
@@ -546,7 +546,7 @@ function getBackgroundImageUrl(image) {
 /**
  * Return the value for background-position property.
  *
- * @param  {Object} image
+ * @param {Object} image
  * @return {String}
  */
 function getBackgroundPosition(image) {
@@ -566,7 +566,7 @@ function getBackgroundPosition(image) {
 /**
  * Return the value for background-size property.
  *
- * @param  {Object} image
+ * @param {Object} image
  * @return {String}
  */
 function getBackgroundSize(image) {
@@ -579,7 +579,7 @@ function getBackgroundSize(image) {
 
 /**
  * Check whether the image is retina.
- * @param  {String}  url
+ * @param {String} url
  * @return {Boolean}
  */
 function isRetinaImage(url) {
@@ -589,7 +589,7 @@ function isRetinaImage(url) {
 /**
  * Return the retina ratio.
  *
- * @param  {String} url
+ * @param {String} url
  * @return {Number}
  */
 function getRetinaRatio(url) {
@@ -602,7 +602,7 @@ function getRetinaRatio(url) {
 /**
  * Check whether all images are retina.
  *
- * @param  {Array}  images
+ * @param {Array} images
  * @return {Boolean}
  */
 function areAllRetina(images) {
