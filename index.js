@@ -1,16 +1,17 @@
 'use strict';
 
+var ansi = require('ansi-colors');
+var async = require('async');
+var fancyLog = require('fancy-log');
+var fs = require('fs');
+var lodash = require('lodash');
+var md5 = require('md5');
+var mkdirp = require('mkdirp');
+var path = require('path');
 var postcss = require('postcss');
 var Q = require('q');
-var lodash = require('lodash');
-var url = require('url');
-var path = require('path');
-var async = require('async');
 var spritesmith = require('spritesmith').run;
-var mkdirp = require('mkdirp');
-var fs = require('fs');
-var md5 = require('md5');
-var gutil = require('gulp-util');
+var url = require('url');
 
 // cache objects;
 var cache = {};
@@ -18,7 +19,7 @@ var cacheIndex = {};
 
 function log() {
   var data = Array.prototype.slice.call(arguments);
-  gutil.log.apply(false, data);
+  fancyLog.apply(false, data);
 }
 
 /**
@@ -120,7 +121,7 @@ function collectImages(css, opts) {
       if (!fs.existsSync(image.path)) {
         log(
           'Easysprites:',
-          gutil.colors.red(image.path),
+          ansi.red(image.path),
           'file unreachable or not exists'
         );
 
@@ -326,7 +327,7 @@ function saveSprites(images, opts, sprites) {
         // if this file is up to date
         if (sprite.isFromCache) {
           var deferred = Q.defer();
-          log('Easysprites:', gutil.colors.green(sprite.path), 'unchanged.');
+          log('Easysprites:', ansi.green(sprite.path), 'unchanged.');
           deferred.resolve(sprite);
           return deferred.promise;
         }
@@ -337,7 +338,7 @@ function saveSprites(images, opts, sprites) {
           sprite.path,
           new Buffer(sprite.image, 'binary')
         ).then(function() {
-          log('Easysprites:', gutil.colors.yellow(sprite.path), 'generated.');
+          log('Easysprites:', ansi.yellow(sprite.path), 'generated.');
           return sprite;
         });
       })
