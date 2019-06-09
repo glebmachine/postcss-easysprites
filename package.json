@@ -10,6 +10,12 @@
     "sprites"
   ],
   "author": "Gleb Mikheev <mikheev@betaagency.ru>",
+  "contributors": [
+    {
+      "name": "Patrick Cate",
+      "url": "https://github.com/patrickcate"
+    }
+  ],
   "license": "MIT",
   "repository": "glebmachine/postcss-easysprites",
   "bugs": {
