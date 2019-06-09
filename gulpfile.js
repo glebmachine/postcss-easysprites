@@ -6,12 +6,7 @@ var easysprite = require('./index.js');
 var rename = require('gulp-rename');
 var eslint = require('gulp-eslint');
 
-gulp.task('test', ['project:basic', 'lint'], function() {
-  var mocha = require('gulp-mocha');
-  return gulp.src('test/*.js', { read: false }).pipe(mocha());
-});
-
-gulp.task('project:basic', function() {
+gulp.task('project:basic', function(done) {
   gulp
     .src('./test/basic/input.css')
     .pipe(
@@ -24,6 +19,8 @@ gulp.task('project:basic', function() {
     )
     .pipe(rename('output.css'))
     .pipe(gulp.dest('./test/basic/'));
+
+  done();
 });
 
 gulp.task('linting', function() {
@@ -36,10 +33,17 @@ gulp.task('runtest', function() {
   return gulp.src('test/basic.js', { read: false }).pipe(mocha());
 });
 
-gulp.task('watch', function() {
-  gulp.watch(['test/basic/input.css'], ['project:basic']);
+gulp.task('test', gulp.series('project:basic', 'linting'), function() {
+  var mocha = require('gulp-mocha');
+  return gulp.src('test/*.js', { read: false }).pipe(mocha());
 });
 
-gulp.task('project', ['project:basic']);
-gulp.task('default', ['watch']);
-gulp.task('test', ['linting', 'runtest']);
+gulp.task('watch', function(done) {
+  gulp.watch(['test/basic/input.css'], ['project:basic']);
+
+  done();
+});
+
+gulp.task('project', gulp.series('project:basic'));
+gulp.task('test', gulp.series('linting', 'runtest'));
+gulp.task('default', gulp.series('watch'));

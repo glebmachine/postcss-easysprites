@@ -41,7 +41,7 @@ var assertNotCached = function(input, output, opts, done) {
   cacheLog();
 
   postcss([plugin(opts)])
-    .process(input)
+    .process(input, { from: undefined })
     .then(function(result) {
       expect(result.css).to.eql(output);
       expect(result.warnings()).to.be.empty;
@@ -65,7 +65,7 @@ var assertCached = function(input, output, opts, done) {
   cacheLog();
 
   postcss([plugin(opts)])
-    .process(input)
+    .process(input, { from: undefined })
     .then(function(result) {
       expect(result.css).to.eql(output);
       expect(result.warnings()).to.be.empty;
