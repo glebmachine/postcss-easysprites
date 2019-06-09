@@ -1,13 +1,13 @@
 .arrow {
-
-  width : 28px; 
+  width : 28px;
   height : 27px;
   margin : 10px auto;
-}  
-   
+}
+
 .arrow {
   background-image: url('/arrow-next.png#elements');
 }
+
 .arrow:hover {
   background-image: url('/arrow-next_hover.png#elements');
 }
@@ -16,6 +16,7 @@
   .arrow {
     background-image: url('images/arrow-next@2x.png#elements');
   }
+
   .arrow:hover {
     background-image: url('/arrow-next_hover@2x.png#elements');
   }
@@ -25,6 +26,7 @@
   .arrow {
     background-image: url('images/arrow-next@3x.png#elements');
   }
+
   .arrow:hover {
     background-image: url('images/arrow-next_hover@3x.png#elements');
   }

@@ -32,8 +32,6 @@ var BACKGROUND = 'background';
 var BACKGROUND_IMAGE = 'background-image';
 
 module.exports = postcss.plugin('postcss-easysprites', function(opts) {
-  opts = opts || {};
-
   // opts
   opts = opts || {};
   opts.groupBy = opts.groupBy || [];

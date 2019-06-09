@@ -20,18 +20,18 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "async": "^1.5.2",
+    "async": "^3.0.1",
     "gulp-util": "^3.0.8",
     "lodash": "^4.17.11",
     "md5": "^2.2.1",
     "mkdirp": "^0.5.1",
-    "postcss": "^5.2.18",
+    "postcss": "^7.0.17",
     "q": "^1.5.1",
     "spritesmith": "^3.3.1"
   },
   "devDependencies": {
     "acorn": "^6.1.1",
-    "chai": "^3.5.0",
+    "chai": "^4.0.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-prettier": "^3.1.0",
@@ -40,8 +40,8 @@
     "git-hooks": "^1.1.10",
     "gulp": "^3.9.1",
     "gulp-eslint": "^5.0.0",
-    "gulp-mocha": "^5.0.0",
-    "gulp-postcss": "^6.4.0",
+    "gulp-mocha": "^6.0.0",
+    "gulp-postcss": "^8.0.0",
     "gulp-rename": "^1.4.0",
     "prettier": "^1.18.2"
   },
