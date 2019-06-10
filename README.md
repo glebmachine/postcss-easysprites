@@ -1,4 +1,4 @@
-# PostCSS Easysprite [![Build Status](https://travis-ci.org/glebmachine/postcss-easysprites.svg?branch=master)](https://travis-ci.org/glebmachine/postcss-easysprites) [![npm version](https://badge.fury.io/js/postcss-easysprites.svg)](http://badge.fury.io/js/postcss-easysprites)
+# PostCSS Easysprite [![Build Status](https://travis-ci.org/glebmachine/postcss-easysprites.svg?branch=master)](https://travis-ci.org/glebmachine/postcss-easysprites) [![npm version](https://badge.fury.io/js/postcss-easysprites.svg)](http://badge.fury.io/js/postcss-easysprites) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
 ## Usage
 
