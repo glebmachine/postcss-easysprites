@@ -10,6 +10,12 @@
     "sprites"
   ],
   "author": "Gleb Mikheev <mikheev@betaagency.ru>",
+  "contributors": [
+    {
+      "name": "Patrick Cate",
+      "url": "https://github.com/patrickcate"
+    }
+  ],
   "license": "MIT",
   "repository": "glebmachine/postcss-easysprites",
   "bugs": {
@@ -20,8 +26,9 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
+    "ansi-colors": "^3.2.4",
     "async": "^3.0.1",
-    "gulp-util": "^3.0.8",
+    "fancy-log": "^1.3.3",
     "lodash": "^4.17.11",
     "md5": "^2.2.1",
     "mkdirp": "^0.5.1",
