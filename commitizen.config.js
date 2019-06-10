@@ -41,11 +41,19 @@ const types = [
   },
 ];
 
-const scopes = ['travis', 'postcss', 'gulp', 'jsdoc', 'jest', 'mocha'].map(
-  (name) => ({
-    name,
-  })
-);
+const scopes = [
+  'chai',
+  'gulp',
+  'jest',
+  'jsdoc',
+  'mocha',
+  'npm',
+  'postcss',
+  'release',
+  'travis',
+].map((name) => ({
+  name,
+}));
 
 module.exports = {
   types,
