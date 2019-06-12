@@ -13,10 +13,13 @@ var Q = require('q');
 var spritesmith = require('spritesmith').run;
 var url = require('url');
 
-// cache objects;
+// Cache objects;
 var cache = {};
 var cacheIndex = {};
 
+/**
+ * Custom log function to style status messages.
+ */
 function log() {
   var data = Array.prototype.slice.call(arguments);
   fancyLog.apply(false, data);
@@ -32,17 +35,22 @@ var GROUP_MASK = '*';
 var BACKGROUND = 'background';
 var BACKGROUND_IMAGE = 'background-image';
 
+/**
+ * postcss-easysprites module.
+ * @module postcss-easysprites
+ * @param {processOptions} [opts] Options passed to the plugin.
+ */
 module.exports = postcss.plugin('postcss-easysprites', function(opts) {
-  // opts
+  // Options.
   opts = opts || {};
   opts.groupBy = opts.groupBy || [];
   opts.padding = opts.padding ? opts.padding : 20;
 
-  // paths
+  // Paths.
   opts.imagePath = path.resolve(process.cwd(), opts.imagePath || '');
   opts.spritePath = path.resolve(process.cwd(), opts.spritePath || '');
 
-  // Group retina images
+  // Group retina images.
   opts.groupBy.unshift(function(image) {
     if (image.ratio > 1) {
       return '@' + image.ratio + 'x';
@@ -74,10 +82,18 @@ module.exports = postcss.plugin('postcss-easysprites', function(opts) {
   };
 });
 
+/**
+ * TODO: Collect images...
+ *
+ * @param {object} css - Object with CSS results.
+ * @param {object} [opts] - Options passed to the plugin.
+ * @returns {Array}
+ */
 function collectImages(css, opts) {
   var images = [];
   var stylesheetPath =
     opts.stylesheetPath || path.dirname(css.source.input.file);
+
   if (!stylesheetPath) {
     throw 'Stylesheets path is undefined, please use option stylesheetPath!';
   }
@@ -140,6 +156,13 @@ function collectImages(css, opts) {
   return lodash.uniqWith(images, lodash.isEqual);
 }
 
+/**
+ * TODO: Group by.
+ *
+ * @param {Array} images - Array of image objects.
+ * @param {object} opts - Options passed to the plugin.
+ * @returns {Promise}
+ */
 function applyGroupBy(images, opts) {
   return Q.Promise(function(resolve, reject) {
     async.reduce(
@@ -173,6 +196,14 @@ function applyGroupBy(images, opts) {
   });
 }
 
+/**
+ * TODO: Set tokens.
+ *
+ * @param {Array} images - Array of image objects.
+ * @param {object} opts - Options passed to the plugin.
+ * @param {object} css - Object with CSS results.
+ * @returns {Promise}
+ */
 function setTokens(images, opts, css) {
   return Q.Promise(function(resolve) {
     css.walkDecls(/^background(-image)?$/, function(decl) {
@@ -226,6 +257,13 @@ function setTokens(images, opts, css) {
   });
 }
 
+/**
+ * Run SpriteSmith on the array of images.
+ *
+ * @param {Array} images - Array of image objects.
+ * @param {object} opts - Options passed to the plugin.
+ * @returns {Promise}
+ */
 function runSpriteSmith(images, opts) {
   return Q.Promise(function(resolve, reject) {
     var all = lodash
@@ -288,6 +326,7 @@ function runSpriteSmith(images, opts) {
 
           // cache - clean old
           var oldCheckstring = cacheIndex[config.spriteName];
+
           if (oldCheckstring && cache[oldCheckstring]) {
             delete cache[oldCheckstring];
           }
@@ -313,6 +352,14 @@ function runSpriteSmith(images, opts) {
   });
 }
 
+/**
+ * Save the sprite image.
+ *
+ * @param {Array} images - An array of image objects.
+ * @param {object} opts - Options passed to the plugin.
+ * @param {Array} sprites - Array of sprite file object data.
+ * @returns {Promise}
+ */
 function saveSprites(images, opts, sprites) {
   return Q.Promise(function(resolve, reject) {
     if (!fs.existsSync(opts.spritePath)) {
@@ -359,10 +406,10 @@ function saveSprites(images, opts, sprites) {
 /**
  * Map properties for every image.
  *
- * @param {Array} images
- * @param {Object} opts
- * @param {Array} sprites
- * @return {Promise}
+ * @param {Array} images - An array of image objects.
+ * @param {object} opts - Options passed to the plugin.
+ * @param {Array} sprites - Array of sprite file object data.
+ * @returns {Promise}
  */
 function mapSpritesProperties(images, opts, sprites) {
   return Q.Promise(function(resolve) {
@@ -380,6 +427,15 @@ function mapSpritesProperties(images, opts, sprites) {
   });
 }
 
+/**
+ * TODO: Update references...
+ *
+ * @param {Array} images - An array of image objects.
+ * @param {object} opts - Options passed to the plugin.
+ * @param {Array} sprites - Array of sprite file object data.
+ * @param {object} css - With CSS results.
+ * @returns {Promise}
+ */
 function updateReferences(images, opts, sprites, css) {
   return Q.Promise(function(resolve) {
     css.walkComments(function(comment) {
@@ -446,12 +502,26 @@ function updateReferences(images, opts, sprites, css) {
   });
 }
 
+/**
+ * TODO: Make sprite path.
+ *
+ * @param {object} opts - Options passed to the plugin.
+ * @param {Array} groups - Array of sprint groups.
+ * @returns {string}
+ */
 function makeSpritePath(opts, groups) {
   var base = opts.spritePath;
   var file = path.resolve(base, groups.join('.') + '.png');
+
   return file.replace('.@', '@');
 }
 
+/**
+ * TODO: Toggle...
+ *
+ * @param {boolean} toggle - Whether to toggle something.
+ * @returns {Function}
+ */
 function mask(toggle) {
   var input = new RegExp(
     '[' + (toggle ? GROUP_DELIMITER : GROUP_MASK) + ']',
@@ -464,6 +534,13 @@ function mask(toggle) {
   };
 }
 
+/**
+ * TODO: Resolve URL...
+ *
+ * @param {object} image - Object of image properties.
+ * @param {object} opts - Options passed to the plugin.
+ * @returns {string}
+ */
 function resolveUrl(image, opts) {
   var results;
   if (/^\//.test(image.url)) {
@@ -479,18 +556,18 @@ function resolveUrl(image, opts) {
 /**
  * Check for url in the given rule.
  *
- * @param {String} rule
- * @return {Boolean}
+ * @param {string} rule - The CSS declared rule.
+ * @returns {boolean}
  */
 function hasImageInRule(rule) {
   return /background[^:]*.*url[^;]+/gi.test(rule);
 }
 
 /**
- * Extract the path to image from the url in given rule.
+ * Extract the path to image from the URL in given rule.
  *
- * @param {String} rule
- * @return {String}
+ * @param {string} rule - The CSS declared rule.
+ * @returns {string}
  */
 function getImageUrl(rule) {
   var match = /background[^:]*:.*url\(([\S]+)\)/gi.exec(rule);
@@ -501,8 +578,8 @@ function getImageUrl(rule) {
 /**
  * Extract the background color from declaration.
  *
- * @param {Object} decl
- * @return {String|null}
+ * @param {object} decl - The process CSS declaration.
+ * @returns {string|null}
  */
 function getColor(decl) {
   var regexes = ['(#([0-9a-f]{3}){1,2})', 'rgba?\\([^\\)]+\\)'];
@@ -520,21 +597,21 @@ function getColor(decl) {
 }
 
 /**
- * Check whether the comment is token that
- * should be replaced with CSS declarations.
+ * Check whether the comment is a token that should be
+ * replaced with CSS declarations.
  *
- * @param {Object} comment
- * @return {Boolean}
+ * @param {object} comment - The comment to check.
+ * @returns {boolean} `true` if the token is a comment token.
  */
 function isToken(comment) {
   return /@replace/gi.test(comment.toString());
 }
 
 /**
- * Return the value for background-image property.
+ * Return the value for background-image url property.
  *
- * @param {Object} image
- * @return {String}
+ * @param {object} image - Object of image properties.
+ * @returns {string} A CSS background-image url property for the passed image.
  */
 function getBackgroundImageUrl(image) {
   var template = lodash.template('url(<%= image.spriteRef %>)');
@@ -545,8 +622,8 @@ function getBackgroundImageUrl(image) {
 /**
  * Return the value for background-position property.
  *
- * @param {Object} image
- * @return {String}
+ * @param {object} image - Object of image properties.
+ * @returns {string} A CSS background-position property for the passed image.
  */
 function getBackgroundPosition(image) {
   var x =
@@ -565,8 +642,8 @@ function getBackgroundPosition(image) {
 /**
  * Return the value for background-size property.
  *
- * @param {Object} image
- * @return {String}
+ * @param {object} image - Object of image properties.
+ * @returns {string} A CSS background-size property for the passed image.
  */
 function getBackgroundSize(image) {
   var x = image.properties.width / image.ratio;
@@ -578,20 +655,22 @@ function getBackgroundSize(image) {
 
 /**
  * Check whether the image is retina.
- * @param {String} url
- * @return {Boolean}
+ *
+ * @param {string} url - The image URL string.
+ * @returns {boolean} Whether the image is retina.
  */
 function isRetinaImage(url) {
   return /@(\d)x\.[a-z]{3,4}$/gi.test(url.split('#')[0]);
 }
 
 /**
- * Return the retina ratio.
+ * Return the retina ratio number of a image URL string.
  *
- * @param {String} url
- * @return {Number}
+ * @param {string} url - The image URL string.
+ * @returns {number} The retina ratio.
  */
 function getRetinaRatio(url) {
+  // Find any @{int}x matches in the url string.
   var matches = /@(\d)x\.[a-z]{3,4}$/gi.exec(url.split('#')[0]);
   var ratio = lodash.parseInt(matches[1]);
 
@@ -601,8 +680,8 @@ function getRetinaRatio(url) {
 /**
  * Check whether all images are retina.
  *
- * @param {Array} images
- * @return {Boolean}
+ * @param {Array} images - The images to check.
+ * @returns {boolean} Whether the images are all retina.
  */
 function areAllRetina(images) {
   return lodash.every(images, function(image) {
