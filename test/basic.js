@@ -9,6 +9,11 @@ var fixture = new StdOutFixture();
 // Keep track of writes so we can check them later..
 var logCapture = [];
 
+/**
+ * Saves the console output so previous messages can be retrieved.
+ *
+ * @returns {undefined}
+ */
 function cacheLog() {
   // Capture a write to stdout
   fixture.capture(function onWrite(string) {
@@ -19,6 +24,11 @@ function cacheLog() {
   });
 }
 
+/**
+ * Retrieves the saved console output messages.
+ *
+ * @returns {string}
+ */
 function uncacheLog() {
   return logCapture.toString();
 }
