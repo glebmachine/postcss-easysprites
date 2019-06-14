@@ -6,9 +6,10 @@ module.exports = {
   },
   parserOptions: {
     ecmaVersion: 6,
+    sourceType: 'module',
   },
   plugins: ['prettier', 'jsdoc'],
-  extends: ['eslint:recommended', 'plugin:prettier/recommended'],
+  extends: ['eslint:recommended', 'airbnb-base', 'plugin:prettier/recommended'],
   rules: {
     // Only allow debugger in development
     'no-debugger': process.env.PRE_COMMIT ? 'error' : 'off',

@@ -46,7 +46,9 @@
     "conventional-changelog-cli": "^2.0.21",
     "cz-customizable": "^6.2.0",
     "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.3.0",
+    "eslint-plugin-import": "^2.17.3",
     "eslint-plugin-jsdoc": "^7.2.3",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-watch": "^5.1.2",
@@ -56,7 +58,8 @@
     "gulp-mocha": "^6.0.0",
     "gulp-postcss": "^8.0.0",
     "gulp-rename": "^1.4.0",
-    "husky": "^2.4.0",
+    "husky": "^2.4.1",
+    "nyc": "^14.1.1",
     "prettier": "^1.18.2"
   },
   "scripts": {
@@ -66,7 +69,9 @@
     "lint:watch": "esw --fix --watch index.js",
     "commit": "git-cz",
     "commit:retry": "git-cz --retry",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s && ./node_modules/.bin/prettier --write 'CHANGELOG.md'"
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s && ./node_modules/.bin/prettier --write 'CHANGELOG.md'",
+    "mocha": "mocha test/basic.js",
+    "coverage": "nyc --reporter=text-summary --reporter=html --reporter=text mocha test/basic.js"
   },
   "config": {
     "commitizen": {

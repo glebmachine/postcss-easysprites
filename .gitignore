@@ -20,3 +20,7 @@ node_modules
 
 ## Ignore debug log files ##
 npm-debug.log
+
+## Test coverage files ##
+.nyc_output
+coverage

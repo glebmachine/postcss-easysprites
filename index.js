@@ -1,27 +1,25 @@
-'use strict';
-
-var ansi = require('ansi-colors');
-var async = require('async');
-var fancyLog = require('fancy-log');
-var fs = require('fs');
-var lodash = require('lodash');
-var md5 = require('md5');
-var mkdirp = require('mkdirp');
-var path = require('path');
-var postcss = require('postcss');
-var Q = require('q');
-var spritesmith = require('spritesmith').run;
-var url = require('url');
+const ansi = require('ansi-colors');
+const async = require('async');
+const fancyLog = require('fancy-log');
+const fs = require('fs');
+const lodash = require('lodash');
+const md5 = require('md5');
+const mkdirp = require('mkdirp');
+const path = require('path');
+const postcss = require('postcss');
+const Q = require('q');
+const spritesmith = require('spritesmith').run;
+const url = require('url');
 
 // Cache objects;
-var cache = {};
-var cacheIndex = {};
+const cache = {};
+const cacheIndex = {};
 
 /**
  * Custom log function to style status messages.
  */
 function log() {
-  var data = Array.prototype.slice.call(arguments);
+  const data = Array.prototype.slice.call(arguments);
   fancyLog.apply(false, data);
 }
 
@@ -30,17 +28,17 @@ function log() {
  *
  * @type {String}
  */
-var GROUP_DELIMITER = '.';
-var GROUP_MASK = '*';
-var BACKGROUND = 'background';
-var BACKGROUND_IMAGE = 'background-image';
+const GROUP_DELIMITER = '.';
+const GROUP_MASK = '*';
+const BACKGROUND = 'background';
+const BACKGROUND_IMAGE = 'background-image';
 
 /**
  * postcss-easysprites module.
  * @module postcss-easysprites
  * @param {processOptions} [opts] Options passed to the plugin.
  */
-module.exports = postcss.plugin('postcss-easysprites', function(opts) {
+module.exports = postcss.plugin('postcss-easysprites', (opts) => {
   // Options.
   opts = opts || {};
   opts.groupBy = opts.groupBy || [];
@@ -51,15 +49,15 @@ module.exports = postcss.plugin('postcss-easysprites', function(opts) {
   opts.spritePath = path.resolve(process.cwd(), opts.spritePath || '');
 
   // Group retina images.
-  opts.groupBy.unshift(function(image) {
+  opts.groupBy.unshift((image) => {
     if (image.ratio > 1) {
-      return '@' + image.ratio + 'x';
+      return `@${image.ratio}x`;
     }
 
     return null;
   });
 
-  return function(css) {
+  return (css) => {
     // if file path
     return (
       Q
@@ -67,7 +65,7 @@ module.exports = postcss.plugin('postcss-easysprites', function(opts) {
         // prepare part
         .all([collectImages(css, opts), opts])
         .spread(applyGroupBy)
-        .spread(function(images, opts) {
+        .spread((images, opts) => {
           return setTokens(images, opts, css);
         })
 
@@ -75,7 +73,7 @@ module.exports = postcss.plugin('postcss-easysprites', function(opts) {
         .spread(runSpriteSmith)
         .spread(saveSprites)
         .spread(mapSpritesProperties)
-        .spread(function(images, opts, sprites) {
+        .spread((images, opts, sprites) => {
           return updateReferences(images, opts, sprites, css);
         })
     );
@@ -90,19 +88,19 @@ module.exports = postcss.plugin('postcss-easysprites', function(opts) {
  * @returns {Array}
  */
 function collectImages(css, opts) {
-  var images = [];
-  var stylesheetPath =
+  const images = [];
+  const stylesheetPath =
     opts.stylesheetPath || path.dirname(css.source.input.file);
 
   if (!stylesheetPath) {
     throw 'Stylesheets path is undefined, please use option stylesheetPath!';
   }
 
-  css.walkRules(function(rule) {
-    var image = {
+  css.walkRules((rule) => {
+    const image = {
       path: null,
       url: null,
-      stylesheetPath: stylesheetPath,
+      stylesheetPath,
       ratio: 1,
       groups: [],
       token: '',
@@ -110,7 +108,7 @@ function collectImages(css, opts) {
 
     if (hasImageInRule(rule.toString())) {
       image.url = getImageUrl(rule.toString());
-      var imageUrl = url.parse(image.url);
+      const imageUrl = url.parse(image.url);
 
       // only locals, hashed paths
       if (
@@ -142,8 +140,8 @@ function collectImages(css, opts) {
         );
 
         // remove hash from link
-        lodash.each(rule.nodes, function(node) {
-          node.value = node.value.replace('#' + image.hash, '');
+        lodash.each(rule.nodes, (node) => {
+          node.value = node.value.replace(`#${image.hash}`, '');
         });
 
         return rule;
@@ -164,16 +162,16 @@ function collectImages(css, opts) {
  * @returns {Promise}
  */
 function applyGroupBy(images, opts) {
-  return Q.Promise(function(resolve, reject) {
+  return Q.Promise((resolve, reject) => {
     async.reduce(
       opts.groupBy,
       images,
-      function(images, group, next) {
+      (images, group, next) => {
         async.map(
           images,
-          function(image, done) {
+          (image, done) => {
             new Q(group(image))
-              .then(function(group) {
+              .then((group) => {
                 if (group) {
                   image.groups.push(group);
                 }
@@ -185,7 +183,7 @@ function applyGroupBy(images, opts) {
           next
         );
       },
-      function(err, images) {
+      (err, images) => {
         if (err) {
           return reject(err);
         }
@@ -205,22 +203,24 @@ function applyGroupBy(images, opts) {
  * @returns {Promise}
  */
 function setTokens(images, opts, css) {
-  return Q.Promise(function(resolve) {
-    css.walkDecls(/^background(-image)?$/, function(decl) {
-      var rule = decl.parent;
-      var url, image, color;
+  return Q.Promise((resolve) => {
+    css.walkDecls(/^background(-image)?$/, (decl) => {
+      const rule = decl.parent;
+      let url;
+      let image;
+      let color;
 
       // Manipulate only rules with background image
       // in them.
       if (hasImageInRule(rule.toString())) {
         url = getImageUrl(rule.toString());
-        image = lodash.find(images, { url: url });
+        image = lodash.find(images, { url });
 
         if (image) {
           // We remove these declarations since
           // our plugin will insert them when
           // they are necessary.
-          rule.walkDecls(/^background-(repeat|size|position)$/, function(decl) {
+          rule.walkDecls(/^background-(repeat|size|position)$/, (decl) => {
             decl.remove();
           });
 
@@ -265,22 +265,22 @@ function setTokens(images, opts, css) {
  * @returns {Promise}
  */
 function runSpriteSmith(images, opts) {
-  return Q.Promise(function(resolve, reject) {
-    var all = lodash
+  return Q.Promise((resolve, reject) => {
+    const all = lodash
       .chain(images)
-      .groupBy(function(image) {
-        var temp;
+      .groupBy((image) => {
+        let temp;
 
         temp = image.groups.map(mask(true));
         temp.unshift('_');
 
         return temp.join(GROUP_DELIMITER);
       })
-      .map(function(images, temp) {
-        var config = lodash.merge({}, opts, {
+      .map((images, temp) => {
+        const config = lodash.merge({}, opts, {
           src: lodash.map(images, 'path'),
         });
-        var ratio;
+        let ratio;
 
         // Enlarge padding for retina images
         if (areAllRetina(images)) {
@@ -291,17 +291,17 @@ function runSpriteSmith(images, opts) {
             .value();
 
           if (ratio.length === 1) {
-            config.padding = config.padding * ratio[0];
+            config.padding *= ratio[0];
           }
         }
 
-        var checkstring = [];
+        let checkstring = [];
 
         // collect images datechanged
         config.spriteName = temp.replace(/^_./, '').replace(/.@/, '@');
-        lodash.each(config.src, function(image) {
+        lodash.each(config.src, (image) => {
           checkstring.push(
-            image + '=' + md5(fs.readFileSync(image).toString())
+            `${image}=${md5(fs.readFileSync(image).toString())}`
           );
         });
 
@@ -309,29 +309,29 @@ function runSpriteSmith(images, opts) {
 
         // get data from cache (avoid spritesmith)
         if (cache[checkstring]) {
-          var deferred = Q.defer();
-          var results = cache[checkstring];
+          const deferred = Q.defer();
+          const results = cache[checkstring];
 
           results.isFromCache = true;
           deferred.resolve(results);
           return deferred.promise;
         }
 
-        return Q.nfcall(spritesmith, config).then(function(result) {
+        return Q.nfcall(spritesmith, config).then((result) => {
           temp = temp.split(GROUP_DELIMITER);
           temp.shift();
 
           // Append info about sprite group
           result.groups = temp.map(mask(false));
 
-          // cache - clean old
-          var oldCheckstring = cacheIndex[config.spriteName];
+          // Cache - clean old
+          const oldCheckstring = cacheIndex[config.spriteName];
 
           if (oldCheckstring && cache[oldCheckstring]) {
             delete cache[oldCheckstring];
           }
 
-          // cache - add brand new data
+          // Cache - add brand new data
           cacheIndex[config.spriteName] = checkstring;
           cache[checkstring] = result;
 
@@ -341,10 +341,10 @@ function runSpriteSmith(images, opts) {
       .value();
 
     Q.all(all)
-      .then(function(results) {
+      .then((results) => {
         resolve([images, opts, results]);
       })
-      .catch(function(err) {
+      .catch((err) => {
         if (err) {
           reject(err);
         }
@@ -361,19 +361,19 @@ function runSpriteSmith(images, opts) {
  * @returns {Promise}
  */
 function saveSprites(images, opts, sprites) {
-  return Q.Promise(function(resolve, reject) {
+  return Q.Promise((resolve, reject) => {
     if (!fs.existsSync(opts.spritePath)) {
       mkdirp.sync(opts.spritePath);
     }
 
-    var all = lodash
+    const all = lodash
       .chain(sprites)
-      .map(function(sprite) {
+      .map((sprite) => {
         sprite.path = makeSpritePath(opts, sprite.groups);
 
         // if this file is up to date
         if (sprite.isFromCache) {
-          var deferred = Q.defer();
+          const deferred = Q.defer();
           log('Easysprites:', ansi.green(sprite.path), 'unchanged.');
           deferred.resolve(sprite);
           return deferred.promise;
@@ -384,7 +384,7 @@ function saveSprites(images, opts, sprites) {
           fs.writeFile,
           sprite.path,
           new Buffer(sprite.image, 'binary')
-        ).then(function() {
+        ).then(() => {
           log('Easysprites:', ansi.yellow(sprite.path), 'generated.');
           return sprite;
         });
@@ -392,10 +392,10 @@ function saveSprites(images, opts, sprites) {
       .value();
 
     Q.all(all)
-      .then(function(sprites) {
+      .then((sprites) => {
         resolve([images, opts, sprites]);
       })
-      .catch(function(err) {
+      .catch((err) => {
         if (err) {
           reject(err);
         }
@@ -412,11 +412,11 @@ function saveSprites(images, opts, sprites) {
  * @returns {Promise}
  */
 function mapSpritesProperties(images, opts, sprites) {
-  return Q.Promise(function(resolve) {
-    sprites = lodash.map(sprites, function(sprite) {
-      return lodash.map(sprite.coordinates, function(coordinates, imagePath) {
+  return Q.Promise((resolve) => {
+    sprites = lodash.map(sprites, (sprite) => {
+      return lodash.map(sprite.coordinates, (coordinates, imagePath) => {
         return lodash.merge(lodash.find(images, { path: imagePath }), {
-          coordinates: coordinates,
+          coordinates,
           spritePath: sprite.path,
           properties: sprite.properties,
         });
@@ -437,17 +437,21 @@ function mapSpritesProperties(images, opts, sprites) {
  * @returns {Promise}
  */
 function updateReferences(images, opts, sprites, css) {
-  return Q.Promise(function(resolve) {
-    css.walkComments(function(comment) {
-      var rule, image, backgroundImage, backgroundPosition, backgroundSize;
+  return Q.Promise((resolve) => {
+    css.walkComments((comment) => {
+      let rule;
+      let image;
+      let backgroundImage;
+      let backgroundPosition;
+      let backgroundSize;
 
-      // Manipulate only token comments
+      // Manipulate only token comments.
       if (isToken(comment)) {
         rule = comment.parent;
         image = lodash.find(images, { url: comment.text });
 
         if (image) {
-          // Generate correct ref to the sprite
+          // Generate correct ref to the sprite.
           image.spriteRef = path.relative(
             image.stylesheetPath,
             image.spritePath
@@ -456,29 +460,33 @@ function updateReferences(images, opts, sprites, css) {
 
           backgroundImage = postcss.decl({
             prop: 'background-image',
-            value: getBackgroundImageUrl(image),
+            value: getBackgroundImageUrl(image.spriteRef),
           });
 
           backgroundPosition = postcss.decl({
             prop: 'background-position',
-            value: getBackgroundPosition(image),
+            value: getBackgroundPosition({
+              x: image.coordinates.x,
+              y: image.coordinates.y,
+              ratio: image.ratio,
+            }),
           });
 
           // Replace the comment and append necessary properties.
           comment.replaceWith(backgroundImage);
 
-          // Output the dimensions
-
+          // Output the dimensions.
           if (opts.outputDimensions) {
-            ['height', 'width'].forEach(function(prop) {
+            ['height', 'width'].forEach((prop) => {
               rule.insertAfter(
                 backgroundImage,
                 postcss.decl({
-                  prop: prop,
-                  value:
-                    (image.ratio > 1
+                  prop,
+                  value: `${
+                    image.ratio > 1
                       ? image.coordinates[prop] / image.ratio
-                      : image.coordinates[prop]) + 'px',
+                      : image.coordinates[prop]
+                  }px`,
                 })
               );
             });
@@ -489,7 +497,11 @@ function updateReferences(images, opts, sprites, css) {
           if (image.ratio > 1) {
             backgroundSize = postcss.decl({
               prop: 'background-size',
-              value: getBackgroundSize(image),
+              value: getBackgroundSize({
+                width: image.properties.width,
+                height: image.properties.height,
+                ratio: image.ratio,
+              }),
             });
 
             rule.insertAfter(backgroundPosition, backgroundSize);
@@ -510,8 +522,8 @@ function updateReferences(images, opts, sprites, css) {
  * @returns {string}
  */
 function makeSpritePath(opts, groups) {
-  var base = opts.spritePath;
-  var file = path.resolve(base, groups.join('.') + '.png');
+  const base = opts.spritePath;
+  const file = path.resolve(base, `${groups.join('.')}.png`);
 
   return file.replace('.@', '@');
 }
@@ -523,13 +535,10 @@ function makeSpritePath(opts, groups) {
  * @returns {Function}
  */
 function mask(toggle) {
-  var input = new RegExp(
-    '[' + (toggle ? GROUP_DELIMITER : GROUP_MASK) + ']',
-    'gi'
-  );
-  var output = toggle ? GROUP_MASK : GROUP_DELIMITER;
+  const input = new RegExp(`[${toggle ? GROUP_DELIMITER : GROUP_MASK}]`, 'gi');
+  const output = toggle ? GROUP_MASK : GROUP_DELIMITER;
 
-  return function(value) {
+  return (value) => {
     return value.replace(input, output);
   };
 }
@@ -542,7 +551,8 @@ function mask(toggle) {
  * @returns {string}
  */
 function resolveUrl(image, opts) {
-  var results;
+  let results;
+
   if (/^\//.test(image.url)) {
     results = path.resolve(opts.imagePath, image.url.replace(/^\//, ''));
   } else {
@@ -570,7 +580,7 @@ function hasImageInRule(rule) {
  * @returns {string}
  */
 function getImageUrl(rule) {
-  var match = /background[^:]*:.*url\(([\S]+)\)/gi.exec(rule);
+  const match = /background[^:]*:.*url\(([\S]+)\)/gi.exec(rule);
 
   return match ? match[1].replace(/['"]/gi, '') : '';
 }
@@ -582,10 +592,10 @@ function getImageUrl(rule) {
  * @returns {string|null}
  */
 function getColor(decl) {
-  var regexes = ['(#([0-9a-f]{3}){1,2})', 'rgba?\\([^\\)]+\\)'];
-  var matches = null;
+  const regexes = ['(#([0-9a-f]{3}){1,2})', 'rgba?\\([^\\)]+\\)'];
+  let matches = null;
 
-  lodash.forEach(regexes, function(regex) {
+  lodash.forEach(regexes, (regex) => {
     regex = new RegExp(regex, 'gi');
 
     if (regex.test(decl.value)) {
@@ -610,47 +620,37 @@ function isToken(comment) {
 /**
  * Return the value for background-image url property.
  *
- * @param {object} image - Object of image properties.
+ * @param {string} spritePath - Sprite path and filename.
  * @returns {string} A CSS background-image url property for the passed image.
  */
-function getBackgroundImageUrl(image) {
-  var template = lodash.template('url(<%= image.spriteRef %>)');
-
-  return template({ image: image });
+function getBackgroundImageUrl(spritePath) {
+  return `url(${spritePath})`;
 }
 
 /**
  * Return the value for background-position property.
  *
- * @param {object} image - Object of image properties.
+ * @param {object} image - Image width, height, and PPI ratio.
  * @returns {string} A CSS background-position property for the passed image.
  */
 function getBackgroundPosition(image) {
-  var x =
-    -1 *
-    (image.ratio > 1 ? image.coordinates.x / image.ratio : image.coordinates.x);
-  var y =
-    -1 *
-    (image.ratio > 1 ? image.coordinates.y / image.ratio : image.coordinates.y);
-  var template = lodash.template(
-    '<%= (x ? x + "px" : x) %> <%= (y ? y + "px" : y) %>'
-  );
+  const x = -1 * (image.ratio > 1 ? image.x / image.ratio : image.x);
+  const y = -1 * (image.ratio > 1 ? image.y / image.ratio : image.y);
 
-  return template({ x: x, y: y });
+  return `${x ? `${x}px` : x} ${y ? `${y}px` : y}`;
 }
 
 /**
- * Return the value for background-size property.
+ * Calculate the CSS background-size pixel value for the image.
  *
- * @param {object} image - Object of image properties.
- * @returns {string} A CSS background-size property for the passed image.
+ * @param {object} image - Image width, height, and PPI ratio.
+ * @returns {string} A CSS background-size compatible size value in pixels.
  */
 function getBackgroundSize(image) {
-  var x = image.properties.width / image.ratio;
-  var y = image.properties.height / image.ratio;
-  var template = lodash.template('<%= x %>px <%= y %>px');
+  const x = image.width / image.ratio;
+  const y = image.height / image.ratio;
 
-  return template({ x: x, y: y });
+  return `${x}px ${y}px`;
 }
 
 /**
@@ -670,9 +670,9 @@ function isRetinaImage(url) {
  * @returns {number} The retina ratio.
  */
 function getRetinaRatio(url) {
-  // Find any @{int}x matches in the url string.
-  var matches = /@(\d)x\.[a-z]{3,4}$/gi.exec(url.split('#')[0]);
-  var ratio = lodash.parseInt(matches[1]);
+  // Find any @{number}x matches in the url string.
+  const matches = /@(\d)x\.[a-z]{3,4}$/gi.exec(url.split('#')[0]);
+  const ratio = parseInt(matches[1], 10);
 
   return ratio;
 }
@@ -684,7 +684,7 @@ function getRetinaRatio(url) {
  * @returns {boolean} Whether the images are all retina.
  */
 function areAllRetina(images) {
-  return lodash.every(images, function(image) {
+  return lodash.every(images, (image) => {
     return image.ratio > 1;
   });
 }

@@ -1,13 +1,12 @@
-'use strict';
+const postcss = require('postcss');
+const { expect } = require('chai');
+const StdOutFixture = require('fixture-stdout');
+const plugin = require('../');
 
-var postcss = require('postcss');
-var expect = require('chai').expect;
-var plugin = require('../');
-var StdOutFixture = require('fixture-stdout');
-var fixture = new StdOutFixture();
+const fixture = new StdOutFixture();
 
 // Keep track of writes so we can check them later..
-var logCapture = [];
+const logCapture = [];
 
 /**
  * Saves the console output so previous messages can be retrieved.
@@ -33,26 +32,26 @@ function uncacheLog() {
   return logCapture.toString();
 }
 
-var assert = function(input, output, opts, done) {
+const assert = (input, output, opts, done) => {
   postcss([plugin(opts)])
     .process(input, { from: undefined })
-    .then(function(result) {
+    .then((result) => {
       expect(result.css).to.eql(output);
       expect(result.warnings()).to.be.empty;
       done();
     })
-    .catch(function(error) {
+    .catch((error) => {
       done(error);
     });
 };
 
-var assertNotCached = function(input, output, opts, done) {
+const assertNotCached = (input, output, opts, done) => {
   // Start stdout log capture.
   cacheLog();
 
   postcss([plugin(opts)])
     .process(input, { from: undefined })
-    .then(function(result) {
+    .then((result) => {
       expect(result.css).to.eql(output);
       expect(result.warnings()).to.be.empty;
 
@@ -63,20 +62,20 @@ var assertNotCached = function(input, output, opts, done) {
         return done(new Error('Sprite already cached, code red!'));
       }
 
-      done();
+      return done();
     })
-    .catch(function(error) {
+    .catch((error) => {
       done(error);
     });
 };
 
-var assertCached = function(input, output, opts, done) {
+const assertCached = (input, output, opts, done) => {
   // Start stdout log capture.
   cacheLog();
 
   postcss([plugin(opts)])
     .process(input, { from: undefined })
-    .then(function(result) {
+    .then((result) => {
       expect(result.css).to.eql(output);
       expect(result.warnings()).to.be.empty;
 
@@ -87,15 +86,15 @@ var assertCached = function(input, output, opts, done) {
         return done(new Error('Cache is not working'));
       }
 
-      done();
+      return done();
     })
-    .catch(function(error) {
+    .catch((error) => {
       done(error);
     });
 };
 
-describe('postcss-easysprites', function() {
-  it('Relative images test', function(done) {
+describe('postcss-easysprites', () => {
+  it('Relative images test', (done) => {
     assert(
       'a { background: url("images/arrow-next.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
@@ -107,7 +106,7 @@ describe('postcss-easysprites', function() {
     );
   });
 
-  it('Absolute images test', function(done) {
+  it('Absolute images test', (done) => {
     assert(
       'a { background: url("/images/arrow-next.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
@@ -120,7 +119,7 @@ describe('postcss-easysprites', function() {
     );
   });
 
-  it('Retina images test', function(done) {
+  it('Retina images test', (done) => {
     assert(
       'a { background: url("/images/arrow-next@2x.png#elements"); }',
       'a { background-image: url(sprites/elements@2x.png); background-position: 0 0; background-size: 28px 27px; }',
@@ -133,7 +132,7 @@ describe('postcss-easysprites', function() {
     );
   });
 
-  it('Not exists image test', function(done) {
+  it('Not exists image test', (done) => {
     assert(
       'a { background: url("/images/image-not-exists.png#elements"); }',
       'a { background: url("/images/image-not-exists.png"); }',
@@ -146,7 +145,20 @@ describe('postcss-easysprites', function() {
     );
   });
 
-  it('Assert sprite not cached', function(done) {
+  it('Hex background color test', (done) => {
+    assert(
+      'a { background: #000000 url("/images/arrow-next.png#elements"); }',
+      'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
+      {
+        imagePath: './test/basic',
+        stylesheetPath: './test/basic', // need here cause of inline call
+        spritePath: './test/basic/sprites',
+      },
+      done
+    );
+  });
+
+  it('Assert sprite not cached', (done) => {
     assertNotCached(
       'a { background: url("images/arrow-next_hover.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
@@ -159,7 +171,7 @@ describe('postcss-easysprites', function() {
     );
   });
 
-  it('Assert sprite cached', function(done) {
+  it('Assert sprite cached', (done) => {
     assertCached(
       'a { background: url("images/arrow-next_hover.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',

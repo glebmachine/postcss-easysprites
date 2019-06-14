@@ -1,10 +1,9 @@
-'use strict';
-
-var gulp = require('gulp');
-var postcss = require('gulp-postcss');
-var easysprite = require('./index.js');
-var rename = require('gulp-rename');
-var eslint = require('gulp-eslint');
+const gulp = require('gulp');
+const postcss = require('gulp-postcss');
+const easysprite = require('./index.js');
+const rename = require('gulp-rename');
+const eslint = require('gulp-eslint');
+const mocha = require('gulp-mocha');
 
 gulp.task('project:basic', function(done) {
   gulp
@@ -28,13 +27,10 @@ gulp.task('linting', function() {
 });
 
 gulp.task('runtest', function() {
-  var mocha = require('gulp-mocha');
-
   return gulp.src('test/basic.js', { read: false }).pipe(mocha());
 });
 
 gulp.task('test', gulp.series('project:basic', 'linting'), function() {
-  var mocha = require('gulp-mocha');
   return gulp.src('test/*.js', { read: false }).pipe(mocha());
 });
 
