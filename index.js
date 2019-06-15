@@ -1,5 +1,3 @@
-const ansi = require('ansi-colors');
-const async = require('async');
 const fs = require('fs');
 const lodash = require('lodash');
 const md5 = require('md5');
@@ -7,10 +5,9 @@ const path = require('path');
 const postcss = require('postcss');
 const Q = require('q');
 const spritesmith = require('spritesmith').run;
-const url = require('url');
 
-const { log } = require('./lib/log');
-
+const { applyGroupBy } = require('./lib/apply-group-by');
+const { collectImages } = require('./lib/collect-images');
 const { isToken, setTokens } = require('./lib/tokens');
 const {
   getBackgroundSize,
@@ -18,20 +15,8 @@ const {
   getBackgroundPosition,
 } = require('./lib/get-background-values');
 
-const {
-  isRetinaImage,
-  getRetinaRatio,
-  areAllRetina,
-} = require('./lib/retina-images');
-
-const {
-  hasImageInRule,
-  getImageUrl,
-  resolveImageUrl,
-} = require('./lib/image-urls');
-
+const { areAllRetina } = require('./lib/retina-images');
 const { mapSpritesProperties, saveSprites } = require('./lib/sprites');
-
 const { mask } = require('./lib/mask');
 
 const GROUP_DELIMITER = require('./lib/constants');
@@ -39,123 +24,6 @@ const GROUP_DELIMITER = require('./lib/constants');
 // Cache objects;
 const cache = {};
 const cacheIndex = {};
-
-/**
- * TODO: Collect images...
- *
- * @param {object} css - Object with CSS results.
- * @param {object} [opts] - Options passed to the plugin.
- * @returns {Array}
- */
-function collectImages(css, opts) {
-  const images = [];
-  const stylesheetPath =
-    opts.stylesheetPath || path.dirname(css.source.input.file);
-
-  if (!stylesheetPath) {
-    throw new Error(
-      'Stylesheets path is undefined, please use option stylesheetPath!'
-    );
-  }
-
-  css.walkRules((rule) => {
-    const image = {
-      path: null,
-      url: null,
-      stylesheetPath,
-      ratio: 1,
-      groups: [],
-      token: '',
-    };
-
-    if (hasImageInRule(rule.toString())) {
-      image.url = getImageUrl(rule.toString());
-      const imageUrl = url.parse(image.url);
-
-      // only locals, hashed paths
-      if (
-        imageUrl.host ||
-        !imageUrl.hash ||
-        imageUrl.pathname.indexOf('//') === 0 ||
-        imageUrl.pathname.indexOf(';base64') !== -1
-      ) {
-        return;
-      }
-
-      image.hash = imageUrl.hash.replace('#', '');
-      image.groups = [image.hash];
-
-      // Perform search for retina
-      if (isRetinaImage(image.url)) {
-        image.ratio = getRetinaRatio(image.url);
-      }
-
-      // Get the path to the image.
-      image.path = resolveImageUrl(image, opts);
-
-      // file exists
-      if (!fs.existsSync(image.path)) {
-        log(
-          'Easysprites:',
-          ansi.red(image.path),
-          'file unreachable or not exists'
-        );
-
-        // Remove hash from link.
-        lodash.each(rule.nodes, (node) => {
-          const ruleNode = node;
-          ruleNode.value = ruleNode.value.replace(`#${image.hash}`, '');
-        });
-
-        return;
-      }
-
-      images.push(image);
-    }
-  });
-
-  return lodash.uniqWith(images, lodash.isEqual);
-}
-
-/**
- * TODO: Group by.
- *
- * @param {Array} imagesToGroup - Array of image objects.
- * @param {object} opts - Options passed to the plugin.
- * @returns {Promise}
- */
-function applyGroupBy(imagesToGroup, opts) {
-  return Q.Promise((resolve, reject) => {
-    async.reduce(
-      opts.groupBy,
-      imagesToGroup,
-      (images, group, next) => {
-        async.map(
-          images,
-          (image, done) => {
-            new Q(group(image))
-              .then((groupedImage) => {
-                if (groupedImage) {
-                  image.groups.push(groupedImage);
-                }
-
-                done(null, image);
-              })
-              .catch(done);
-          },
-          next
-        );
-      },
-      (err, images) => {
-        if (err) {
-          return reject(err);
-        }
-
-        return resolve([images, opts]);
-      }
-    );
-  });
-}
 
 /**
  * Run SpriteSmith on the array of images.
