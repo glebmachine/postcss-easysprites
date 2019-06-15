@@ -10,6 +10,12 @@ const postcss = require('postcss');
 const Q = require('q');
 const spritesmith = require('spritesmith').run;
 const url = require('url');
+const {
+  getBackgroundSize,
+  getBackgroundImageUrl,
+  getBackgroundPosition,
+  getBackgroundColor,
+} = require('./lib/get-background-values');
 
 // Cache objects;
 const cache = {};
@@ -93,7 +99,9 @@ function collectImages(css, opts) {
     opts.stylesheetPath || path.dirname(css.source.input.file);
 
   if (!stylesheetPath) {
-    throw 'Stylesheets path is undefined, please use option stylesheetPath!';
+    throw new Error(
+      'Stylesheets path is undefined, please use option stylesheetPath!'
+    );
   }
 
   css.walkRules((rule) => {
@@ -225,7 +233,7 @@ function setTokens(images, opts, css) {
           });
 
           if (decl.prop === BACKGROUND) {
-            color = getColor(decl);
+            color = getBackgroundColor(decl);
 
             // Extract color to background-color propery
             if (color && color.length === 1) {
@@ -269,9 +277,7 @@ function runSpriteSmith(images, opts) {
     const all = lodash
       .chain(images)
       .groupBy((image) => {
-        let temp;
-
-        temp = image.groups.map(mask(true));
+        const temp = image.groups.map(mask(true));
         temp.unshift('_');
 
         return temp.join(GROUP_DELIMITER);
@@ -383,7 +389,7 @@ function saveSprites(images, opts, sprites) {
         return Q.nfcall(
           fs.writeFile,
           sprite.path,
-          new Buffer(sprite.image, 'binary')
+          Buffer.from(sprite.image, 'binary')
         ).then(() => {
           log('Easysprites:', ansi.yellow(sprite.path), 'generated.');
           return sprite;
@@ -586,27 +592,6 @@ function getImageUrl(rule) {
 }
 
 /**
- * Extract the background color from declaration.
- *
- * @param {object} decl - The process CSS declaration.
- * @returns {string|null}
- */
-function getColor(decl) {
-  const regexes = ['(#([0-9a-f]{3}){1,2})', 'rgba?\\([^\\)]+\\)'];
-  let matches = null;
-
-  lodash.forEach(regexes, (regex) => {
-    regex = new RegExp(regex, 'gi');
-
-    if (regex.test(decl.value)) {
-      matches = decl.value.match(regex);
-    }
-  });
-
-  return matches;
-}
-
-/**
  * Check whether the comment is a token that should be
  * replaced with CSS declarations.
  *
@@ -618,60 +603,24 @@ function isToken(comment) {
 }
 
 /**
- * Return the value for background-image url property.
- *
- * @param {string} spritePath - Sprite path and filename.
- * @returns {string} A CSS background-image url property for the passed image.
- */
-function getBackgroundImageUrl(spritePath) {
-  return `url(${spritePath})`;
-}
-
-/**
- * Return the value for background-position property.
- *
- * @param {object} image - Image width, height, and PPI ratio.
- * @returns {string} A CSS background-position property for the passed image.
- */
-function getBackgroundPosition(image) {
-  const x = -1 * (image.ratio > 1 ? image.x / image.ratio : image.x);
-  const y = -1 * (image.ratio > 1 ? image.y / image.ratio : image.y);
-
-  return `${x ? `${x}px` : x} ${y ? `${y}px` : y}`;
-}
-
-/**
- * Calculate the CSS background-size pixel value for the image.
- *
- * @param {object} image - Image width, height, and PPI ratio.
- * @returns {string} A CSS background-size compatible size value in pixels.
- */
-function getBackgroundSize(image) {
-  const x = image.width / image.ratio;
-  const y = image.height / image.ratio;
-
-  return `${x}px ${y}px`;
-}
-
-/**
  * Check whether the image is retina.
  *
- * @param {string} url - The image URL string.
+ * @param {string} imageUrl - The image URL string.
  * @returns {boolean} Whether the image is retina.
  */
-function isRetinaImage(url) {
-  return /@(\d)x\.[a-z]{3,4}$/gi.test(url.split('#')[0]);
+function isRetinaImage(imageUrl) {
+  return /@(\d)x\.[a-z]{3,4}$/gi.test(imageUrl.split('#')[0]);
 }
 
 /**
  * Return the retina ratio number of a image URL string.
  *
- * @param {string} url - The image URL string.
+ * @param {string} imageUrl - The image URL string.
  * @returns {number} The retina ratio.
  */
-function getRetinaRatio(url) {
+function getRetinaRatio(imageUrl) {
   // Find any @{number}x matches in the url string.
-  const matches = /@(\d)x\.[a-z]{3,4}$/gi.exec(url.split('#')[0]);
+  const matches = /@(\d)x\.[a-z]{3,4}$/gi.exec(imageUrl.split('#')[0]);
   const ratio = parseInt(matches[1], 10);
 
   return ratio;

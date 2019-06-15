@@ -96,7 +96,7 @@ const assertCached = (input, output, opts, done) => {
 describe('postcss-easysprites', () => {
   it('Relative images test', (done) => {
     assert(
-      'a { background: url("images/arrow-next.png#elements"); }',
+      'a { background:url("images/arrow-next.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
       {
         stylesheetPath: './test/basic',
