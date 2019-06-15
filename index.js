@@ -1,90 +1,44 @@
 const ansi = require('ansi-colors');
 const async = require('async');
-const fancyLog = require('fancy-log');
 const fs = require('fs');
 const lodash = require('lodash');
 const md5 = require('md5');
-const mkdirp = require('mkdirp');
 const path = require('path');
 const postcss = require('postcss');
 const Q = require('q');
 const spritesmith = require('spritesmith').run;
 const url = require('url');
+
+const { log } = require('./lib/log');
+
+const { isToken, setTokens } = require('./lib/tokens');
 const {
   getBackgroundSize,
   getBackgroundImageUrl,
   getBackgroundPosition,
-  getBackgroundColor,
 } = require('./lib/get-background-values');
+
+const {
+  isRetinaImage,
+  getRetinaRatio,
+  areAllRetina,
+} = require('./lib/retina-images');
+
+const {
+  hasImageInRule,
+  getImageUrl,
+  resolveImageUrl,
+} = require('./lib/image-urls');
+
+const { mapSpritesProperties, saveSprites } = require('./lib/sprites');
+
+const { mask } = require('./lib/mask');
+
+const GROUP_DELIMITER = require('./lib/constants');
 
 // Cache objects;
 const cache = {};
 const cacheIndex = {};
-
-/**
- * Custom log function to style status messages.
- */
-function log() {
-  const data = Array.prototype.slice.call(arguments);
-  fancyLog.apply(false, data);
-}
-
-/**
- * Constants.
- *
- * @type {String}
- */
-const GROUP_DELIMITER = '.';
-const GROUP_MASK = '*';
-const BACKGROUND = 'background';
-const BACKGROUND_IMAGE = 'background-image';
-
-/**
- * postcss-easysprites module.
- * @module postcss-easysprites
- * @param {processOptions} [opts] Options passed to the plugin.
- */
-module.exports = postcss.plugin('postcss-easysprites', (opts) => {
-  // Options.
-  opts = opts || {};
-  opts.groupBy = opts.groupBy || [];
-  opts.padding = opts.padding ? opts.padding : 20;
-
-  // Paths.
-  opts.imagePath = path.resolve(process.cwd(), opts.imagePath || '');
-  opts.spritePath = path.resolve(process.cwd(), opts.spritePath || '');
-
-  // Group retina images.
-  opts.groupBy.unshift((image) => {
-    if (image.ratio > 1) {
-      return `@${image.ratio}x`;
-    }
-
-    return null;
-  });
-
-  return (css) => {
-    // if file path
-    return (
-      Q
-
-        // prepare part
-        .all([collectImages(css, opts), opts])
-        .spread(applyGroupBy)
-        .spread((images, opts) => {
-          return setTokens(images, opts, css);
-        })
-
-        // compilation part
-        .spread(runSpriteSmith)
-        .spread(saveSprites)
-        .spread(mapSpritesProperties)
-        .spread((images, opts, sprites) => {
-          return updateReferences(images, opts, sprites, css);
-        })
-    );
-  };
-});
 
 /**
  * TODO: Collect images...
@@ -137,7 +91,7 @@ function collectImages(css, opts) {
       }
 
       // Get the path to the image.
-      image.path = resolveUrl(image, opts);
+      image.path = resolveImageUrl(image, opts);
 
       // file exists
       if (!fs.existsSync(image.path)) {
@@ -147,12 +101,13 @@ function collectImages(css, opts) {
           'file unreachable or not exists'
         );
 
-        // remove hash from link
+        // Remove hash from link.
         lodash.each(rule.nodes, (node) => {
-          node.value = node.value.replace(`#${image.hash}`, '');
+          const ruleNode = node;
+          ruleNode.value = ruleNode.value.replace(`#${image.hash}`, '');
         });
 
-        return rule;
+        return;
       }
 
       images.push(image);
@@ -165,23 +120,23 @@ function collectImages(css, opts) {
 /**
  * TODO: Group by.
  *
- * @param {Array} images - Array of image objects.
+ * @param {Array} imagesToGroup - Array of image objects.
  * @param {object} opts - Options passed to the plugin.
  * @returns {Promise}
  */
-function applyGroupBy(images, opts) {
+function applyGroupBy(imagesToGroup, opts) {
   return Q.Promise((resolve, reject) => {
     async.reduce(
       opts.groupBy,
-      images,
+      imagesToGroup,
       (images, group, next) => {
         async.map(
           images,
           (image, done) => {
             new Q(group(image))
-              .then((group) => {
-                if (group) {
-                  image.groups.push(group);
+              .then((groupedImage) => {
+                if (groupedImage) {
+                  image.groups.push(groupedImage);
                 }
 
                 done(null, image);
@@ -196,72 +151,9 @@ function applyGroupBy(images, opts) {
           return reject(err);
         }
 
-        resolve([images, opts]);
+        return resolve([images, opts]);
       }
     );
-  });
-}
-
-/**
- * TODO: Set tokens.
- *
- * @param {Array} images - Array of image objects.
- * @param {object} opts - Options passed to the plugin.
- * @param {object} css - Object with CSS results.
- * @returns {Promise}
- */
-function setTokens(images, opts, css) {
-  return Q.Promise((resolve) => {
-    css.walkDecls(/^background(-image)?$/, (decl) => {
-      const rule = decl.parent;
-      let url;
-      let image;
-      let color;
-
-      // Manipulate only rules with background image
-      // in them.
-      if (hasImageInRule(rule.toString())) {
-        url = getImageUrl(rule.toString());
-        image = lodash.find(images, { url });
-
-        if (image) {
-          // We remove these declarations since
-          // our plugin will insert them when
-          // they are necessary.
-          rule.walkDecls(/^background-(repeat|size|position)$/, (decl) => {
-            decl.remove();
-          });
-
-          if (decl.prop === BACKGROUND) {
-            color = getBackgroundColor(decl);
-
-            // Extract color to background-color propery
-            if (color && color.length === 1) {
-              rule.prop = 'background-color';
-              rule.value = color[0];
-              rule.before = ' ';
-            }
-          }
-
-          if (decl.prop === BACKGROUND || decl.prop === BACKGROUND_IMAGE) {
-            image.token = postcss.comment({
-              text: image.url,
-              raws: {
-                before: ' ',
-                left: '@replace|',
-                right: '',
-              },
-            });
-
-            // Replace the declaration with a comment token
-            // which will be used later for reference.
-            decl.replaceWith(image.token);
-          }
-        }
-      }
-    });
-
-    resolve([images, opts]);
   });
 }
 
@@ -282,16 +174,18 @@ function runSpriteSmith(images, opts) {
 
         return temp.join(GROUP_DELIMITER);
       })
-      .map((images, temp) => {
+      .map((imagesToSprite, tempImage) => {
+        let temp = tempImage;
+
         const config = lodash.merge({}, opts, {
           src: lodash.map(images, 'path'),
         });
         let ratio;
 
         // Enlarge padding for retina images
-        if (areAllRetina(images)) {
+        if (areAllRetina(imagesToSprite)) {
           ratio = lodash
-            .chain(images)
+            .chain(imagesToSprite)
             .flatMap('ratio')
             .uniq()
             .value();
@@ -326,9 +220,10 @@ function runSpriteSmith(images, opts) {
         return Q.nfcall(spritesmith, config).then((result) => {
           temp = temp.split(GROUP_DELIMITER);
           temp.shift();
+          const spriteResult = result;
 
-          // Append info about sprite group
-          result.groups = temp.map(mask(false));
+          // Append info about sprite group.
+          spriteResult.groups = temp.map(mask(false));
 
           // Cache - clean old
           const oldCheckstring = cacheIndex[config.spriteName];
@@ -355,81 +250,6 @@ function runSpriteSmith(images, opts) {
           reject(err);
         }
       });
-  });
-}
-
-/**
- * Save the sprite image.
- *
- * @param {Array} images - An array of image objects.
- * @param {object} opts - Options passed to the plugin.
- * @param {Array} sprites - Array of sprite file object data.
- * @returns {Promise}
- */
-function saveSprites(images, opts, sprites) {
-  return Q.Promise((resolve, reject) => {
-    if (!fs.existsSync(opts.spritePath)) {
-      mkdirp.sync(opts.spritePath);
-    }
-
-    const all = lodash
-      .chain(sprites)
-      .map((sprite) => {
-        sprite.path = makeSpritePath(opts, sprite.groups);
-
-        // if this file is up to date
-        if (sprite.isFromCache) {
-          const deferred = Q.defer();
-          log('Easysprites:', ansi.green(sprite.path), 'unchanged.');
-          deferred.resolve(sprite);
-          return deferred.promise;
-        }
-
-        // save new file version
-        return Q.nfcall(
-          fs.writeFile,
-          sprite.path,
-          Buffer.from(sprite.image, 'binary')
-        ).then(() => {
-          log('Easysprites:', ansi.yellow(sprite.path), 'generated.');
-          return sprite;
-        });
-      })
-      .value();
-
-    Q.all(all)
-      .then((sprites) => {
-        resolve([images, opts, sprites]);
-      })
-      .catch((err) => {
-        if (err) {
-          reject(err);
-        }
-      });
-  });
-}
-
-/**
- * Map properties for every image.
- *
- * @param {Array} images - An array of image objects.
- * @param {object} opts - Options passed to the plugin.
- * @param {Array} sprites - Array of sprite file object data.
- * @returns {Promise}
- */
-function mapSpritesProperties(images, opts, sprites) {
-  return Q.Promise((resolve) => {
-    sprites = lodash.map(sprites, (sprite) => {
-      return lodash.map(sprite.coordinates, (coordinates, imagePath) => {
-        return lodash.merge(lodash.find(images, { path: imagePath }), {
-          coordinates,
-          spritePath: sprite.path,
-          properties: sprite.properties,
-        });
-      });
-    });
-
-    resolve([images, opts, sprites]);
   });
 }
 
@@ -521,119 +341,48 @@ function updateReferences(images, opts, sprites, css) {
 }
 
 /**
- * TODO: Make sprite path.
- *
- * @param {object} opts - Options passed to the plugin.
- * @param {Array} groups - Array of sprint groups.
- * @returns {string}
+ * postcss-easysprites module.
+ * @module postcss-easysprites
+ * @param {processOptions} [options] Options passed to the plugin.
  */
-function makeSpritePath(opts, groups) {
-  const base = opts.spritePath;
-  const file = path.resolve(base, `${groups.join('.')}.png`);
+module.exports = postcss.plugin('postcss-easysprites', (options) => {
+  // Options.
+  const opts = options || {};
+  opts.groupBy = opts.groupBy || [];
+  opts.padding = opts.padding ? opts.padding : 20;
 
-  return file.replace('.@', '@');
-}
+  // Paths.
+  opts.imagePath = path.resolve(process.cwd(), opts.imagePath || '');
+  opts.spritePath = path.resolve(process.cwd(), opts.spritePath || '');
 
-/**
- * TODO: Toggle...
- *
- * @param {boolean} toggle - Whether to toggle something.
- * @returns {Function}
- */
-function mask(toggle) {
-  const input = new RegExp(`[${toggle ? GROUP_DELIMITER : GROUP_MASK}]`, 'gi');
-  const output = toggle ? GROUP_MASK : GROUP_DELIMITER;
+  // Group retina images.
+  opts.groupBy.unshift((image) => {
+    if (image.ratio > 1) {
+      return `@${image.ratio}x`;
+    }
 
-  return (value) => {
-    return value.replace(input, output);
-  };
-}
-
-/**
- * TODO: Resolve URL...
- *
- * @param {object} image - Object of image properties.
- * @param {object} opts - Options passed to the plugin.
- * @returns {string}
- */
-function resolveUrl(image, opts) {
-  let results;
-
-  if (/^\//.test(image.url)) {
-    results = path.resolve(opts.imagePath, image.url.replace(/^\//, ''));
-  } else {
-    results = path.resolve(image.stylesheetPath, image.url);
-  }
-
-  // get rid of get params and hash;
-  return results.split('#')[0].split('?')[0];
-}
-
-/**
- * Check for url in the given rule.
- *
- * @param {string} rule - The CSS declared rule.
- * @returns {boolean}
- */
-function hasImageInRule(rule) {
-  return /background[^:]*.*url[^;]+/gi.test(rule);
-}
-
-/**
- * Extract the path to image from the URL in given rule.
- *
- * @param {string} rule - The CSS declared rule.
- * @returns {string}
- */
-function getImageUrl(rule) {
-  const match = /background[^:]*:.*url\(([\S]+)\)/gi.exec(rule);
-
-  return match ? match[1].replace(/['"]/gi, '') : '';
-}
-
-/**
- * Check whether the comment is a token that should be
- * replaced with CSS declarations.
- *
- * @param {object} comment - The comment to check.
- * @returns {boolean} `true` if the token is a comment token.
- */
-function isToken(comment) {
-  return /@replace/gi.test(comment.toString());
-}
-
-/**
- * Check whether the image is retina.
- *
- * @param {string} imageUrl - The image URL string.
- * @returns {boolean} Whether the image is retina.
- */
-function isRetinaImage(imageUrl) {
-  return /@(\d)x\.[a-z]{3,4}$/gi.test(imageUrl.split('#')[0]);
-}
-
-/**
- * Return the retina ratio number of a image URL string.
- *
- * @param {string} imageUrl - The image URL string.
- * @returns {number} The retina ratio.
- */
-function getRetinaRatio(imageUrl) {
-  // Find any @{number}x matches in the url string.
-  const matches = /@(\d)x\.[a-z]{3,4}$/gi.exec(imageUrl.split('#')[0]);
-  const ratio = parseInt(matches[1], 10);
-
-  return ratio;
-}
-
-/**
- * Check whether all images are retina.
- *
- * @param {Array} images - The images to check.
- * @returns {boolean} Whether the images are all retina.
- */
-function areAllRetina(images) {
-  return lodash.every(images, (image) => {
-    return image.ratio > 1;
+    return null;
   });
-}
+
+  return (css) => {
+    // if file path
+    return (
+      Q
+
+        // prepare part
+        .all([collectImages(css, opts), opts])
+        .spread(applyGroupBy)
+        .spread((images, tokenOptions) => {
+          return setTokens(images, tokenOptions, css);
+        })
+
+        // compilation part
+        .spread(runSpriteSmith)
+        .spread(saveSprites)
+        .spread(mapSpritesProperties)
+        .spread((images, spriteOptions, sprites) => {
+          return updateReferences(images, spriteOptions, sprites, css);
+        })
+    );
+  };
+});
