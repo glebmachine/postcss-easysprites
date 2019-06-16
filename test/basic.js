@@ -8,10 +8,14 @@ const fixture = new StdOutFixture();
 // Keep track of writes so we can check them later..
 const logCapture = [];
 
-const testOptions = {
-  imagePath: './test/basic',
-  stylesheetPath: './test/basic', // need here cause of inline call
-  spritePath: './test/basic/sprites',
+const getTestOptions = () => {
+  return JSON.parse(
+    JSON.stringify({
+      imagePath: './test/basic',
+      stylesheetPath: './test/basic', // need here cause of inline call
+      spritePath: './test/basic/sprites',
+    })
+  );
 };
 
 /**
@@ -43,7 +47,7 @@ const assert = (input, output, opts, done) => {
     .process(input, { from: undefined })
     .then((result) => {
       expect(result.css).to.eql(output);
-      /* eslint-disable no-unused-expressions */
+      // eslint-disable-next-line
       expect(result.warnings()).to.be.empty;
       done();
     })
@@ -60,7 +64,7 @@ const assertNotCached = (input, output, opts, done) => {
     .process(input, { from: undefined })
     .then((result) => {
       expect(result.css).to.eql(output);
-      /* eslint-disable no-unused-expressions */
+      // eslint-disable-next-line
       expect(result.warnings()).to.be.empty;
 
       // Stop stdout capture.
@@ -85,6 +89,7 @@ const assertCached = (input, output, opts, done) => {
     .process(input, { from: undefined })
     .then((result) => {
       expect(result.css).to.eql(output);
+      // eslint-disable-next-line
       expect(result.warnings()).to.be.empty;
 
       // Stop stdout capture.
@@ -101,8 +106,9 @@ const assertCached = (input, output, opts, done) => {
     });
 };
 
-describe('postcss-easysprites: basic', () => {
-  it('Relative images test', (done) => {
+/* eslint-disable func-names */
+describe('Basic', function() {
+  it('Relative images test', function(done) {
     assert(
       'a { background:url("images/arrow-next.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
@@ -114,16 +120,16 @@ describe('postcss-easysprites: basic', () => {
     );
   });
 
-  it('Absolute images test', (done) => {
+  it('Absolute images test', function(done) {
     assert(
       'a { background: url("/images/arrow-next.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
-      JSON.parse(JSON.stringify(testOptions)),
+      getTestOptions(),
       done
     );
   });
 
-  it('Background image property test', (done) => {
+  it('Background image property test', function(done) {
     assert(
       'a { background-image: url("images/arrow-next.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
@@ -135,87 +141,153 @@ describe('postcss-easysprites: basic', () => {
     );
   });
 
-  it('Retina images test', (done) => {
+  it('Retina images test', function(done) {
     assert(
       'a { background: url("/images/arrow-next@2x.png#elements"); }',
       'a { background-image: url(sprites/elements@2x.png); background-position: 0 0; background-size: 28px 27px; }',
-      JSON.parse(JSON.stringify(testOptions)),
+      getTestOptions(),
       done
     );
   });
 
-  it('Not exists image test', (done) => {
+  it('Not exists image test', function(done) {
     assert(
       'a { background: url("/images/image-not-exists.png#elements"); }',
       'a { background: url("/images/image-not-exists.png"); }',
-      JSON.parse(JSON.stringify(testOptions)),
+      getTestOptions(),
+      done
+    );
+  });
+
+  it('multiple images', function(done) {
+    assert(
+      'a { background: url("/images/arrow-next.png#elements"); } a:hover { background: url("/images/arrow-next_hover.png#elements"); } a:focus { background: url("/images/arrow-previous.png#elements"); }',
+      'a { background-image: url(sprites/elements.png); background-position: 0 0; } a:hover { background-image: url(sprites/elements.png); background-position: -48px 0; } a:focus { background-image: url(sprites/elements.png); background-position: 0 -47px; }',
+      getTestOptions(),
+      done
+    );
+  });
+
+  it('no background url', function(done) {
+    assert(
+      'a { background: #000 url(); }',
+      'a { background: #000 url(); }',
+      getTestOptions(),
+      done
+    );
+  });
+
+  it('output dimensions', function(done) {
+    assert(
+      'a { background-image: url("images/arrow-next.png#elements"); }',
+      'a { background-image: url(sprites/elements.png); background-position: 0 0; width: 28px; height: 27px; }',
+      {
+        stylesheetPath: './test/basic',
+        spritePath: './test/basic/sprites',
+        outputDimensions: true,
+      },
+      done
+    );
+  });
+
+  it('output retina dimensions', function(done) {
+    assert(
+      'a { background: url("images/arrow-next@2x.png#elements"); }',
+      'a { background-image: url(sprites/elements@2x.png); background-position: 0 0; background-size: 28px 27px; width: 28px; height: 27px; }',
+      {
+        stylesheetPath: './test/basic',
+        spritePath: './test/basic/sprites',
+        outputDimensions: true,
+      },
+      done
+    );
+  });
+
+  it('remove existing background-position', function(done) {
+    assert(
+      'a { background-image: url("images/arrow-next.png#elements"); background-position: center; }',
+      'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
+      getTestOptions(),
+      done
+    );
+  });
+
+  it('no padding', function(done) {
+    assert(
+      'a { background-image: url("images/arrow-next.png#elements"); }',
+      'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
+      {
+        stylesheetPath: './test/basic',
+        spritePath: './test/basic/sprites',
+        padding: 100,
+      },
       done
     );
   });
 });
 
-describe('postcss-easysprites: colors', () => {
-  it('Hex background color test', (done) => {
+describe('Background Color', function() {
+  it('should extract the hexadecimal color to a separate `background-color` declaration.', function(done) {
     assert(
       'a { background: #000000 url("/images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; background-color: #000000; }',
-      JSON.parse(JSON.stringify(testOptions)),
+      'a { background-color: #000000; background-image: url(sprites/elements.png); background-position: 0 0; }',
+      getTestOptions(),
       done
     );
   });
 
-  it('RGB background color test', (done) => {
+  it('should extract the RGB color to a separate `background-color` declaration.', function(done) {
     assert(
       'a { background: rgb(0, 0, 0) url("/images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; background-color: rgb(0, 0, 0); }',
-      JSON.parse(JSON.stringify(testOptions)),
+      'a { background-color: rgb(0, 0, 0); background-image: url(sprites/elements.png); background-position: 0 0; }',
+      getTestOptions(),
       done
     );
   });
 
-  it('RGBa background color test', (done) => {
+  it('should extract the RGBa color to a separate `background-color` declaration.', function(done) {
     assert(
       'a { background: rgba(0, 0, 0, 1) url("/images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; background-color: rgba(0, 0, 0, 1); }',
-      JSON.parse(JSON.stringify(testOptions)),
+      'a { background-color: rgba(0, 0, 0, 1); background-image: url(sprites/elements.png); background-position: 0 0; }',
+      getTestOptions(),
       done
     );
   });
 
-  it('HSL background color test', (done) => {
+  it('should extract the  HSL color to a separate `background-color` declaration.', function(done) {
     assert(
       'a { background: hsl(0,100%, 50%) url("/images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; background-color: hsl(0,100%, 50%); }',
-      JSON.parse(JSON.stringify(testOptions)),
+      'a { background-color: hsl(0,100%, 50%); background-image: url(sprites/elements.png); background-position: 0 0; }',
+      getTestOptions(),
       done
     );
   });
 
-  it('HSLa background color test', (done) => {
+  it('should extract the HSLa color to a separate `background-color` declaration.', function(done) {
     assert(
       'a { background: hsla(0,100%, 50%, 1) url("/images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; background-color: hsla(0,100%, 50%, 1); }',
-      JSON.parse(JSON.stringify(testOptions)),
+      'a { background-color: hsla(0,100%, 50%, 1); background-image: url(sprites/elements.png); background-position: 0 0; }',
+      getTestOptions(),
       done
     );
   });
 });
 
-describe('postcss-easysprites: caching', () => {
-  it('Assert sprite not cached', (done) => {
+describe('Caching', function() {
+  it('Assert sprite not cached', function(done) {
     assertNotCached(
       'a { background: url("images/arrow-next_hover.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
-      JSON.parse(JSON.stringify(testOptions)),
+      getTestOptions(),
       done
     );
   });
 
-  it('Assert sprite cached', (done) => {
+  it('Assert sprite cached', function(done) {
     assertCached(
       'a { background: url("images/arrow-next_hover.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
-      JSON.parse(JSON.stringify(testOptions)),
+      getTestOptions(),
       done
     );
   });
