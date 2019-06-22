@@ -27,7 +27,7 @@ gulp.task('linting', () => {
 });
 
 gulp.task('runtest', () => {
-  return gulp.src('test/basic.js', { read: false }).pipe(mocha());
+  return gulp.src('test/*.test.js', { read: false }).pipe(mocha());
 });
 
 gulp.task('test', gulp.series('project:basic', 'linting'), () => {
