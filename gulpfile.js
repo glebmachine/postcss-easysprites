@@ -3,24 +3,49 @@ const postcss = require('gulp-postcss');
 const rename = require('gulp-rename');
 const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
+const del = require('del');
 const easysprite = require('./index.js');
 
 gulp.task('project:basic', (done) => {
   gulp
-    .src('./test/basic/input.css')
+    .src('./test/demo/input.css')
     .pipe(
       postcss([
         easysprite({
-          imagePath: './test/basic/images',
-          spritePath: './test/basic/sprites',
+          imagePath: './test/demo/images',
+          spritePath: './test/demo/sprites',
         }),
       ])
     )
     .pipe(rename('output.css'))
-    .pipe(gulp.dest('./test/basic/'));
+    .pipe(gulp.dest('./test/demo/'));
 
   done();
 });
+
+gulp.task('clean:demo', (done) => {
+  del(['./test/demo/sprites/**']);
+  done();
+});
+
+gulp.task('runDemo', (done) => {
+  gulp
+    .src('./test/demo/input.css')
+    .pipe(
+      postcss([
+        easysprite({
+          imagePath: './test/demo/images',
+          spritePath: './test/demo/sprites',
+        }),
+      ])
+    )
+    .pipe(rename('output.css'))
+    .pipe(gulp.dest('./test/demo/'));
+
+  done();
+});
+
+gulp.task('demo', gulp.series('clean:demo', 'runDemo'));
 
 gulp.task('linting', () => {
   return gulp.src('./index.js').pipe(eslint()); // hint (optional)
