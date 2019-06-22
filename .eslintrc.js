@@ -5,8 +5,7 @@ module.exports = {
     node: true,
   },
   parserOptions: {
-    ecmaVersion: 6,
-    sourceType: 'module',
+    ecmaVersion: 2017,
   },
   plugins: ['prettier', 'jsdoc'],
   extends: ['eslint:recommended', 'airbnb-base', 'plugin:prettier/recommended'],
@@ -19,7 +18,6 @@ module.exports = {
       ? ['error', { allow: ['warn', 'error'] }]
       : 'off',
     'prettier/prettier': 'error',
-    strict: ['error', 'global'],
 
     // JSDoc linting rules.
     'jsdoc/check-alignment': 'warn',
