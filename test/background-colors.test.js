@@ -29,6 +29,24 @@ describe('Background Colors', function() {
     );
   });
 
+  it('should extract the CSS color keyword to a separate `background-color` declaration.', function(done) {
+    assertEqual(
+      'a { background: aliceblue url("/images/arrow-next.png#elements"); }',
+      'a { background-color: aliceblue; background-image: url(sprites/elements.png); background-position: 0 0; }',
+      getTestOptions(),
+      done
+    );
+  });
+
+  it('should not extract an invalid CSS color keyword to a separate `background-color` declaration.', function(done) {
+    assertEqual(
+      'a { background: notacolor url("/images/arrow-next.png#elements"); }',
+      'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
+      getTestOptions(),
+      done
+    );
+  });
+
   it('should extract the hexadecimal color to a separate `background-color` declaration.', function(done) {
     assertEqual(
       'a { background: #000000 url("/images/arrow-next.png#elements"); }',

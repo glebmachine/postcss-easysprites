@@ -2,3 +2,4 @@ node_modules
 .eslintrc.js
 commitizen.config.js
 commitlint.config.js
+coverage

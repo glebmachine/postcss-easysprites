@@ -5,8 +5,8 @@ const postcss = require('postcss');
 const rimraf = require('rimraf');
 const pixelmatch = require('pixelmatch');
 const { PNG } = require('pngjs');
-const plugin = require('../');
 const { getTestOptions } = require('./test-utils');
+const plugin = require('../');
 
 /**
  * Gets all of generated sprite filenames.

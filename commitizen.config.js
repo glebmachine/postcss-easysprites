@@ -50,8 +50,9 @@ const scopes = [
   'npm',
   'postcss',
   'release',
-  'travis',
   'spritesmith',
+  'tests',
+  'travis',
 ].map((name) => ({
   name,
 }));
