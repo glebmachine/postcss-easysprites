@@ -1,14 +1,13 @@
-"use strict"
-
-const postcss = require('postcss');
 const { expect } = require('chai');
+const postcss = require('postcss');
 const StdOutFixture = require('fixture-stdout');
 const plugin = require('../');
 
-const fixture = new StdOutFixture();
 const { getTestOptions, assertEqual } = require('./test-utils');
 
-// Keep track of writes so we can check them later..
+const fixture = new StdOutFixture();
+
+// Keep track of writes so we can check them later.
 const logCapture = [];
 
 /**
@@ -21,7 +20,8 @@ function cacheLog() {
   fixture.capture(function onWrite(string) {
     logCapture.push(string);
 
-    // If you return `false`, you'll prevent the write to the original stream (useful for preventing log output during tests.)
+    // If you return `false`, you'll prevent the write to the original stream
+    // (useful for preventing log output during tests.)
     return true;
   });
 }
@@ -88,7 +88,13 @@ const assertCached = (input, output, opts, done) => {
 
 /* eslint-disable func-names */
 describe('Caching', function() {
-  it('Create sprite to test caching', function(done) {
+  // before(function(done) {
+  // rimraf('./test/basic/sprites/*', done);
+  // exec('rm -Rf ./test/basic/sprites/directory-does-not-exist', done);
+  // runs after all tests in this block
+  // });
+
+  it('should create sprite to that will be cached', function(done) {
     assertEqual(
       'a { background: url("/images/arrow-next.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
@@ -97,7 +103,7 @@ describe('Caching', function() {
     );
   });
 
-  it('Assert sprite not cached', function(done) {
+  it('assert sprite not cached', function(done) {
     assertNotCached(
       'a { background: url("images/arrow-next_hover.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
@@ -106,7 +112,7 @@ describe('Caching', function() {
     );
   });
 
-  it('Assert sprite cached', function(done) {
+  it('assert sprite cached', function(done) {
     assertCached(
       'a { background: url("images/arrow-next_hover.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',

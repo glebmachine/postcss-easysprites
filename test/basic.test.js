@@ -1,34 +1,23 @@
-"use strict"
-
 const chai = require('chai');
 const sinon = require('sinon');
 const path = require('path');
 const rimraf = require('rimraf');
-const chaiAsPromised = require('chai-as-promised');
+// const chaiAsPromised = require('chai-as-promised');
 
 const { expect } = chai;
 const { collectImages } = require('../lib/collect-images');
 const { getTestOptions, assertEqual } = require('./test-utils');
 
-chai.use(chaiAsPromised);
+// chai.use(chaiAsPromised);
 
 /* eslint-disable func-names */
 describe('Basic', function() {
-  // before(function(done) {
-  //   // rimraf('./test/basic/sprites/*', done);
-  //   // exec('rm -Rf ./test/basic/sprites/directory-does-not-exist', done);
-  //   // runs after all tests in this block
-  // });
+  beforeEach(function(done) {
+    rimraf('./test/basic/sprites', done);
+  });
 
-  // after(function(done) {
-  //   // rimraf('./test/basic/sprites/*', done);
-  //   // exec('rm -Rf ./test/basic/sprites/directory-does-not-exist', done);
-  //   // runs after all tests in this block
-  // });
-
-  after(function(done) {
-    // Delete the test `directory-does-not-exist` folder.
-    rimraf('./test/basic/sprites/directory-does-not-exist', done);
+  afterEach(function(done) {
+    rimraf('./test/basic/sprites', done);
   });
 
   it('Relative images test', function(done) {

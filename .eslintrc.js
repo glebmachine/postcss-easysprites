@@ -18,7 +18,14 @@ module.exports = {
       ? ['error', { allow: ['warn', 'error'] }]
       : 'off',
     'prettier/prettier': 'error',
-
+    'max-len': [
+      'warn',
+      {
+        code: 80,
+        ignoreTrailingComments: true,
+        ignoreStrings: true,
+      },
+    ],
     // JSDoc linting rules.
     'jsdoc/check-alignment': 'warn',
     'jsdoc/check-examples': 'warn',
