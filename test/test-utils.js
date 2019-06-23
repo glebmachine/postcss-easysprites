@@ -1,5 +1,3 @@
-"use strict"
-
 const postcss = require('postcss');
 const { expect } = require('chai');
 const plugin = require('../');
@@ -8,7 +6,7 @@ const getTestOptions = () => {
   return JSON.parse(
     JSON.stringify({
       imagePath: './test/basic',
-      stylesheetPath: './test/basic', // need here cause of inline call
+      stylesheetPath: './test/basic', // Needed because of inline call.
       spritePath: './test/basic/sprites',
     })
   );

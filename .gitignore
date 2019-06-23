@@ -24,3 +24,4 @@ npm-debug.log
 ## Test coverage files ##
 .nyc_output
 coverage
+test/**/sprites
