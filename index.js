@@ -14,9 +14,10 @@ const { mapSpritesProperties, saveSprites } = require('./lib/sprites');
  * @module postcss-easysprites
  * @param {processOptions} [options] Options passed to the plugin.
  */
-module.exports = postcss.plugin('postcss-easysprites', (options = {}) => {
+module.exports = postcss.plugin('postcss-easysprites', (options) => {
   // Options.
-  const opts = options;
+  const opts = options || {};
+
   opts.groupBy = opts.groupBy || [];
   opts.padding = opts.padding ? opts.padding : 20;
 

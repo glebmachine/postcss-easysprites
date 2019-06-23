@@ -29,7 +29,7 @@ Plugin support relative/absolute paths on input file, but still can generate onl
   background-image: url('/images/arrow-next.png#elements');
 }
 .arrow:hover {
-  background-image: url('/images/arrow-next_hover.png#elements');
+  background-image: url('/images/arrow-next--hover.png#elements');
 }
 
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5) {
@@ -86,7 +86,7 @@ Plugin support relative/absolute paths on input file, but still can generate onl
 }
 ```
 
-## Usage
+## PostCSS Usage
 
 ```js
 postcss([

@@ -5,9 +5,9 @@ const plugin = require('../');
 const getTestOptions = () => {
   return JSON.parse(
     JSON.stringify({
-      imagePath: './test/basic',
-      stylesheetPath: './test/basic', // Needed because of inline call.
-      spritePath: './test/basic/sprites',
+      imagePath: './test/fixtures',
+      stylesheetPath: './test/fixtures', // Needed because of inline call.
+      spritePath: './test/fixtures/sprites',
     })
   );
 };

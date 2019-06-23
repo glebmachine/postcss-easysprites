@@ -1,7 +1,16 @@
+const rimraf = require('rimraf');
 const { getTestOptions, assertEqual } = require('./test-utils');
 
 /* eslint-disable func-names */
 describe('Background Colors', function() {
+  before(function(done) {
+    rimraf('./test/fixtures/sprites', done);
+  });
+
+  after(function(done) {
+    rimraf('./test/fixtures/sprites', done);
+  });
+
   it('should extract the `transparent` color keyword to a separate `background-color` declaration.', function(done) {
     assertEqual(
       'a { background: transparent url("/images/arrow-next.png#elements"); }',

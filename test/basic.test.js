@@ -1,59 +1,26 @@
-const chai = require('chai');
-const sinon = require('sinon');
-const path = require('path');
 const rimraf = require('rimraf');
-// const chaiAsPromised = require('chai-as-promised');
-
-const { expect } = chai;
-const { collectImages } = require('../lib/collect-images');
 const { getTestOptions, assertEqual } = require('./test-utils');
 
-// chai.use(chaiAsPromised);
-
 /* eslint-disable func-names */
-describe('Basic', function() {
+describe('fixtures', function() {
   beforeEach(function(done) {
-    rimraf('./test/basic/sprites', done);
+    rimraf('./test/fixtures/sprites', done);
   });
 
   afterEach(function(done) {
-    rimraf('./test/basic/sprites', done);
+    rimraf('./test/fixtures/sprites', done);
   });
 
-  it('Relative images test', function(done) {
+  it('should process images defined with the `background-image` property', function(done) {
     assertEqual(
-      'a { background:url("images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
-      {
-        stylesheetPath: './test/basic',
-        spritePath: './test/basic/sprites',
-      },
-      done
-    );
-  });
-
-  it('Absolute images test', function(done) {
-    assertEqual(
-      'a { background: url("/images/arrow-next.png#elements"); }',
+      'a { background-image: url("images/arrow-next.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
       getTestOptions(),
       done
     );
   });
 
-  it('Background image property test', function(done) {
-    assertEqual(
-      'a { background-image: url("images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
-      {
-        stylesheetPath: './test/basic',
-        spritePath: './test/basic/sprites',
-      },
-      done
-    );
-  });
-
-  it('Retina images test', function(done) {
+  it('should process retina images', function(done) {
     assertEqual(
       'a { background: url("/images/arrow-next@2x.png#elements"); }',
       'a { background-image: url(sprites/elements@2x.png); background-position: 0 0; background-size: 28px 27px; }',
@@ -62,7 +29,7 @@ describe('Basic', function() {
     );
   });
 
-  it('Not exists image test', function(done) {
+  it('should skip sprite generation when an image does not exist', function(done) {
     assertEqual(
       'a { background: url("/images/image-not-exists.png#elements"); }',
       'a { background: url("/images/image-not-exists.png"); }',
@@ -71,51 +38,40 @@ describe('Basic', function() {
     );
   });
 
-  it('multiple images', function(done) {
+  it('should process multiple background images', function(done) {
     assertEqual(
-      'a { background: url("/images/arrow-next.png#elements"); } a:hover { background: url("/images/arrow-next_hover.png#elements"); } a:focus { background: url("/images/arrow-previous.png#elements"); }',
+      'a { background: url("/images/arrow-next.png#elements"); } a:hover { background: url("/images/arrow-next--hover.png#elements"); } a:focus { background: url("/images/arrow-previous.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; } a:hover { background-image: url(sprites/elements.png); background-position: -48px 0; } a:focus { background-image: url(sprites/elements.png); background-position: 0 -47px; }',
       getTestOptions(),
       done
     );
   });
 
-  it('no background url', function(done) {
-    assertEqual(
-      'a { background: #000 url(); }',
-      'a { background: #000 url(); }',
-      getTestOptions(),
-      done
-    );
-  });
+  it('should output correct sprite dimensions when the `outputDimensions` is true', function(done) {
+    const testOptions = getTestOptions();
+    testOptions.outputDimensions = true;
 
-  it('output dimensions', function(done) {
     assertEqual(
       'a { background-image: url("images/arrow-next.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; width: 28px; height: 27px; }',
-      {
-        stylesheetPath: './test/basic',
-        spritePath: './test/basic/sprites',
-        outputDimensions: true,
-      },
+      testOptions,
       done
     );
   });
 
-  it('output retina dimensions', function(done) {
+  it('should output correct retina sprite dimensions when the `outputDimensions` is true', function(done) {
+    const testOptions = getTestOptions();
+    testOptions.outputDimensions = true;
+
     assertEqual(
       'a { background: url("images/arrow-next@2x.png#elements"); }',
       'a { background-image: url(sprites/elements@2x.png); background-position: 0 0; background-size: 28px 27px; width: 28px; height: 27px; }',
-      {
-        stylesheetPath: './test/basic',
-        spritePath: './test/basic/sprites',
-        outputDimensions: true,
-      },
+      testOptions,
       done
     );
   });
 
-  it('remove existing background-position', function(done) {
+  it('should remove any existing background-position property', function(done) {
     assertEqual(
       'a { background-image: url("images/arrow-next.png#elements"); background-position: center; }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
@@ -124,63 +80,23 @@ describe('Basic', function() {
     );
   });
 
-  it('custom padding', function(done) {
+  it('should work with custom padding options', function(done) {
+    const testOptions = getTestOptions();
+    testOptions.padding = 100;
+
     assertEqual(
       'a { background-image: url("images/arrow-next.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
-      {
-        stylesheetPath: './test/basic',
-        spritePath: './test/basic/sprites',
-        padding: 100,
-      },
+      testOptions,
       done
     );
   });
 
-  it('create new sprite directory', function(done) {
-    assertEqual(
-      'a { background:url("images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/directory-does-not-exist/elements.png); background-position: 0 0; }',
-      {
-        stylesheetPath: './test/basic',
-        spritePath: './test/basic/sprites/directory-does-not-exist',
-      },
-      done
-    );
-  });
-
-  it('has no sprite path', function(done) {
-    const css = {
-      source: {
-        input: {
-          file: '',
-        },
-      },
-    };
-
-    const opts = {
-      stylesheetPath: '',
-    };
-
-    const stubDirname = () => {
-      return '';
-    };
-
-    const dirnameStub = sinon.stub(path, 'dirname').callsFake(stubDirname);
-
-    expect(collectImages.bind(collectImages, css, opts)).to.throw(
-      'Stylesheets path is undefined, please use option stylesheetPath!'
-    );
-
-    dirnameStub.restore();
-    done();
-  });
-
-  it('has no image in rule', function(done) {
+  it('should skip rules without background image url properties', function(done) {
     assertEqual('a { }', 'a { }', getTestOptions(), done);
   });
 
-  it('only tokens with background image rules', function(done) {
+  it('should skip background rules when the url property is not defined', function(done) {
     assertEqual(
       'a { background: transparent }',
       'a { background: transparent }',
@@ -189,16 +105,16 @@ describe('Basic', function() {
     );
   });
 
-  it('only comments with tokens', function(done) {
+  it('should not process CSS comment which have background image properties', function(done) {
     assertEqual(
-      'a { background-image: url("/images/arrow-next.png#elements"); } /** background-image: url("/images/arrow-next_hover.png#elements") */',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; } /** background-image: url("/images/arrow-next_hover.png#elements") */',
+      'a { background-image: url("/images/arrow-next.png#elements"); } /** background-image: url("/images/arrow-next--hover.png#elements") */',
+      'a { background-image: url(sprites/elements.png); background-position: 0 0; } /** background-image: url("/images/arrow-next--hover.png#elements") */',
       getTestOptions(),
       done
     );
   });
 
-  it('only tokens without background image declarations', function(done) {
+  it('should not replace tokens in comments', function(done) {
     assertEqual(
       'a { background-image: url("/images/arrow-next.png#elements"); } /** background-image: url("@replace|images/arrow-next.png#elements") */',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; } /** background-image: url("@replace|images/arrow-next.png#elements") */',

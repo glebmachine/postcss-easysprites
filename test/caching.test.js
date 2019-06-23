@@ -1,9 +1,9 @@
 const { expect } = require('chai');
 const postcss = require('postcss');
 const StdOutFixture = require('fixture-stdout');
+const rimraf = require('rimraf');
 const plugin = require('../');
-
-const { getTestOptions, assertEqual } = require('./test-utils');
+const { getTestOptions } = require('./test-utils');
 
 const fixture = new StdOutFixture();
 
@@ -88,33 +88,22 @@ const assertCached = (input, output, opts, done) => {
 
 /* eslint-disable func-names */
 describe('Caching', function() {
-  // before(function(done) {
-  // rimraf('./test/basic/sprites/*', done);
-  // exec('rm -Rf ./test/basic/sprites/directory-does-not-exist', done);
-  // runs after all tests in this block
-  // });
-
-  it('should create sprite to that will be cached', function(done) {
-    assertEqual(
-      'a { background: url("/images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
-      getTestOptions(),
-      done
-    );
+  before(function(done) {
+    rimraf('./test/fixtures/sprites/*', done);
   });
 
-  it('assert sprite not cached', function(done) {
+  it('should not find a cached version of the generated sprite', function(done) {
     assertNotCached(
-      'a { background: url("images/arrow-next_hover.png#elements"); }',
+      'a { background: url("images/arrow-next--hover.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
       getTestOptions(),
       done
     );
   });
 
-  it('assert sprite cached', function(done) {
+  it('should find and use the previously generated sprite that was cached', function(done) {
     assertCached(
-      'a { background: url("images/arrow-next_hover.png#elements"); }',
+      'a { background: url("images/arrow-next--hover.png#elements"); }',
       'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
       getTestOptions(),
       done
