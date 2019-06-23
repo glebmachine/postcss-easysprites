@@ -68,7 +68,7 @@
     "sinon": "^7.3.2"
   },
   "scripts": {
-    "test": "npm run test",
+    "test": "gulp test",
     "lint": "eslint --ext .js .",
     "lint:fix": "eslint --fix --ext .js .",
     "lint:watch": "esw --fix --watch --ext .js .",
