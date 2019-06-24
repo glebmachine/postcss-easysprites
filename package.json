@@ -77,7 +77,7 @@
     "commit:retry": "git-cz --retry",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s && ./node_modules/.bin/prettier --write 'CHANGELOG.md'",
     "mocha": "mocha --recursive --timeout 5000",
-    "coverage": "nyc --reporter=text-summary --reporter=html --reporter=text mocha --recursive --timeout 5000"
+    "coverage": "nyc --reporter=text-summary --reporter=html --reporter=text --reporter=lcov mocha --recursive --timeout 5000"
   },
   "config": {
     "commitizen": {

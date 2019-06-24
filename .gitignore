@@ -25,3 +25,4 @@ npm-debug.log
 .nyc_output
 coverage
 test/**/sprites
+test/demo/output.css
