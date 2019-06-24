@@ -2,7 +2,7 @@ const rimraf = require('rimraf');
 const { getTestOptions, assertEqual } = require('./test-utils');
 
 /* eslint-disable func-names */
-describe('fixtures', function() {
+describe('Basic', function() {
   beforeEach(function(done) {
     rimraf('./test/fixtures/sprites', done);
   });

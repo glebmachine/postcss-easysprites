@@ -1,14 +1,13 @@
-const chai = require('chai');
+const { expect } = require('chai');
 const sinon = require('sinon');
 const path = require('path');
 const rimraf = require('rimraf');
 
-const { expect } = chai;
 const { collectImages } = require('../lib/collect-images');
 const { getTestOptions, assertEqual } = require('./test-utils');
 
 /* eslint-disable func-names */
-describe('Basic', function() {
+describe('Image Paths', function() {
   beforeEach(function(done) {
     rimraf('./test/fixtures/sprites', done);
   });

@@ -7,6 +7,7 @@ const { updateReferences } = require('./lib/update-references');
 const { applyGroupBy } = require('./lib/apply-group-by');
 const { collectImages } = require('./lib/collect-images');
 const { setTokens } = require('./lib/tokens');
+const { isLayout } = require('./lib/layouts');
 const { mapSpritesProperties, saveSprites } = require('./lib/sprites');
 
 /**
@@ -20,6 +21,11 @@ module.exports = postcss.plugin('postcss-easysprites', (options) => {
 
   opts.groupBy = opts.groupBy || [];
   opts.padding = opts.padding ? opts.padding : 20;
+
+  opts.algorithm = opts.algorithm || 'binary-tree';
+
+  // Check that the layout algorithm is valid.
+  isLayout(opts.algorithm);
 
   // Paths.
   opts.imagePath = path.resolve(process.cwd(), opts.imagePath || '');

@@ -24,6 +24,7 @@ module.exports = {
         code: 80,
         ignoreTrailingComments: true,
         ignoreStrings: true,
+        ignoreTemplateLiterals: true,
       },
     ],
     // JSDoc linting rules.

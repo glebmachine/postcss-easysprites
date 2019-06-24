@@ -18,6 +18,9 @@ task('runDemo', (done) => {
         easysprite({
           imagePath: './test/demo/images',
           spritePath: './test/demo/sprites',
+          // padding: 20,
+          // outputDimensions: true,
+          // algorithm: 'binary-tree',
         }),
       ])
     )
