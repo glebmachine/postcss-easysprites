@@ -52,8 +52,8 @@ describe('Basic', function() {
     testOptions.outputDimensions = true;
 
     assertEqual(
-      'a { background-image: url("images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; width: 28px; height: 27px; }',
+      'a { background: url("/images/arrow-next.png#elements"); } a:hover { background: url("/images/arrow-next--hover.png#elements"); }',
+      'a { background-image: url(sprites/elements.png); background-position: 0 0; width: 28px; height: 27px; } a:hover { background-image: url(sprites/elements.png); background-position: -48px 0; width: 28px; height: 27px; }',
       testOptions,
       done
     );
@@ -64,8 +64,8 @@ describe('Basic', function() {
     testOptions.outputDimensions = true;
 
     assertEqual(
-      'a { background: url("images/arrow-next@2x.png#elements"); }',
-      'a { background-image: url(sprites/elements@2x.png); background-position: 0 0; background-size: 28px 27px; width: 28px; height: 27px; }',
+      'a { background: url("/images/arrow-next@2x.png#elements"); } a:hover { background: url("/images/arrow-next--hover@2x.png#elements"); }',
+      'a { background-image: url(sprites/elements@2x.png); background-position: 0 0; background-size: 76px 27px; width: 28px; height: 27px; } a:hover { background-image: url(sprites/elements@2x.png); background-position: -48px 0; background-size: 76px 27px; width: 28px; height: 27px; }',
       testOptions,
       done
     );
