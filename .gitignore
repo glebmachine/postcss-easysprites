@@ -1,3 +1,28 @@
-node_modules/
+## OS generated files ##
+*.DS_Store
+*.DS_Store?
+._*
+*.Spotlight-V100
+*.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+## Sublime Text files ##
+*.sublime-project
+*.sublime-workspace
+
+## VS Code Files ##
+.vscode
+
+## Ignore the Node Modules folder ##
+node_modules
+
+## Ignore debug log files ##
 npm-debug.log
-.DS_Store
+
+## Test coverage files ##
+.nyc_output
+coverage
+test/**/sprites
+test/demo/output.css

@@ -1,54 +1,44 @@
-'use strict';
+const { task, src, dest, series } = require('gulp');
+const postcss = require('gulp-postcss');
+const rename = require('gulp-rename');
+const eslint = require('gulp-eslint');
+const mocha = require('gulp-mocha');
+const del = require('del');
+const easysprite = require('./index.js');
 
-var gulp = require('gulp');
-var postcss = require('gulp-postcss');
-var easysprite = require('./index.js');
-var rename = require('gulp-rename');
-
-// linting
-var jshint = require('gulp-jshint');
-var jscs = require('gulp-jscs');
-var stylish = require('gulp-jscs-stylish');
-
-gulp.task('test', ['project:basic', 'lint'], function() {
-  var mocha = require('gulp-mocha');
-  return gulp.src('test/*.js', { read: false })
-    .pipe(mocha());
+task('clean:demo', (done) => {
+  del(['./test/demo/sprites/**']);
+  done();
 });
 
-gulp.task('project:basic', function() {
-
-  gulp.src('./test/basic/input.css')
-    .pipe(postcss([
+task('runDemo', (done) => {
+  src('./test/fixtures/input.css')
+    .pipe(
+      postcss([
         easysprite({
-          imagePath:'./test/basic/images',
-          spritePath: './test/basic/sprites',
+          imagePath: './test/demo/images',
+          spritePath: './test/demo/sprites',
+          // padding: 20,
+          // outputDimensions: true,
+          // algorithm: 'binary-tree',
         }),
-      ]))
-      .pipe(rename('output.css'))
-      .pipe(gulp.dest('./test/basic/'));
+      ])
+    )
+    .pipe(rename('output.css'))
+    .pipe(dest('./test/demo/'));
+
+  done();
 });
 
-gulp.task('linting', function() {
-  return gulp.src('./index.js')
-    .pipe(jshint())                           // hint (optional)
-    .pipe(jscs())                             // enforce style guide
-    .pipe(stylish.combineWithHintResults())   // combine with jshint results
-    .pipe(jshint.reporter('jshint-stylish')); // use any jshint reporter to log hint
-});
-gulp.task('runtest', function() {
-  var mocha = require('gulp-mocha');
-  return gulp.src('test/basic.js', { read: false })
-    .pipe(mocha());
+task('linting', () => {
+  return src('**/*.js').pipe(eslint()); // hint (optional)
 });
 
-
-gulp.task('watch', function() {
-  gulp.watch([
-    'test/basic/input.css',
-  ], ['project:basic']);
+task('runTest', () => {
+  return src('test/*.test.js', { read: false }).pipe(mocha());
 });
 
-gulp.task('project', ['project:basic']);
-gulp.task('default', ['watch']);
-gulp.task('test', ['linting', 'runtest']);
+// task('project', series('project:basic'));
+task('demo', series('clean:demo', 'runDemo'));
+task('test', series('linting', 'runTest'));
+task('default', series('test'));
