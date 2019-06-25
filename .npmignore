@@ -4,12 +4,17 @@ npm-debug.log
 
 # Test files/folders.
 test/
+coverage/
 .travis.yml
 gulpfile.js
 
 # Lint/git configuration files.
-.gitignore
 .editorconfig
 .eslintignore
 .eslintrc.js
+.gitattributes
+.gitignore
+.prettierignore
 .prettierrc.js
+commitizen.config.js
+commitlint.config.js

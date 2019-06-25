@@ -2,28 +2,30 @@
 
 ## Usage
 
-Just append `#spritename` to the end of image url. No complicated mechanism or strict folder structure.
+Just append `#spritename` to the end of the image url. No complicated mechanism or strict folder structure is needed.
 
 ## Retina
 
-Plugin moving all retina images, with any ratio to separate sprite. To achieve this all retina images should be declarated with `@2x` suffix (where number is image ratio).
+The plugin moves all retina images with any ratio to a separate sprite. To achieve this all retina images should be declared with a `@2x` suffix (where number is the image ratio.)
 
 ## Caching/performance
 
-Large project got huge time to compile. This plugin check your files md5 and compile only new sprites. No more silly work! (not first time, yet)
+Projects with a large number of sprites can take a long time to compile. The help with this, the plugin checks files against a md5 hash to only compile new/changed sprites. This does not yet work for the [first time a sprite is generated](https://github.com/glebmachine/postcss-easysprites/issues/5).
 
 ## Relative/absolute paths
 
-Plugin support relative/absolute paths on input file, but still can generate only relative paths on output file (i'm working on it)
+The plugin supports both relative andabsolute paths on input file, but can currently only [generate relative paths on output file](https://github.com/glebmachine/postcss-easysprites/issues/4).
 
 ## Plugin options
 
-- `imagePath` path for resolving absolute images.
-- `spritePath` path to use for saving the generated sprites file(s).
-- `stylesheetPath` path for resolve relative images (overriding options, css file folder used for default).
-- `padding` the amount of space in pixels to put around images in the sprite. Default: `20`
-- `outputDimensions` whether to also output the pixel `height` and `width` of the sprite. This value will be scaled proportionally for retina images. Default: `false`
-- `algorithm` the [layout algorithm](https://github.com/twolfson/layout) spritesmith should use. Default: 'binary-tree'
+| Option | Description | Default |
+| --- | --- | --- |
+| `imagePath` | Path for resolving absolute images. | `process.cwd()` |
+| `spritePath` | Path to use for saving the generated sprites file(s). | `process.cwd()` |
+| `stylesheetPath` | Path for resolving relative images (overriding options, css file folder used for default.) | `''` |
+| `padding` | The amount of space in pixels to put around images in the sprite. _**Note:**_ This value will be scaled proportionally for retina images. | `20` |
+| `outputDimensions` | Whether to also output the pixel `height` and `width` of the image. | `false` |
+| `algorithm` | The [layout algorithm](https://github.com/twolfson/layout) spritesmith should use. | `binary-tree` |
 
 ## Input example
 
@@ -107,4 +109,4 @@ postcss([
 ]);
 ```
 
-See [PostCSS](https://postcss.org/) docs for examples for your environment.
+See the [PostCSS](https://postcss.org) docs for examples of your particular environment.
