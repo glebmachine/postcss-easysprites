@@ -26,6 +26,9 @@
   "engines": {
     "node": ">=8.0.0"
   },
+  "files": [
+    "lib"
+  ],
   "dependencies": {
     "ansi-colors": "^4.0.1",
     "async": "^3.0.1",
