@@ -1,7 +1,5 @@
 const path = require('path');
 const postcss = require('postcss');
-const Q = require('q');
-
 const { runSpriteSmith } = require('./lib/run-spritesmith');
 const { updateReferences } = require('./lib/update-references');
 const { applyGroupBy } = require('./lib/apply-group-by');
@@ -41,24 +39,24 @@ module.exports = postcss.plugin('postcss-easysprites', (options) => {
   });
 
   return (css) => {
-    // if file path
-    return (
-      Q
-
-        // prepare part
-        .all([collectImages(css, opts), opts])
-        .spread(applyGroupBy)
-        .spread((images, tokenOptions) => {
-          return setTokens(images, tokenOptions, css);
-        })
-
-        // compilation part
-        .spread(runSpriteSmith)
-        .spread(saveSprites)
-        .spread(mapSpritesProperties)
-        .spread((images, spriteOptions, sprites) => {
-          return updateReferences(images, spriteOptions, sprites, css);
-        })
-    );
+    return Promise.all([collectImages(css, opts), opts])
+      .then(([imageCollection, spriteOpts]) => {
+        return applyGroupBy(imageCollection, spriteOpts);
+      })
+      .then(([images, spriteOpts]) => {
+        return setTokens(images, spriteOpts, css);
+      })
+      .then(([images, spriteOpts]) => {
+        return runSpriteSmith(images, spriteOpts);
+      })
+      .then(([images, spriteOpts, results]) => {
+        return saveSprites(images, spriteOpts, results);
+      })
+      .then(([images, spriteOpts, sprites]) => {
+        return mapSpritesProperties(images, spriteOpts, sprites);
+      })
+      .then(([images, spriteOptions, sprites]) => {
+        return updateReferences(images, spriteOptions, sprites, css);
+      });
   };
 });
