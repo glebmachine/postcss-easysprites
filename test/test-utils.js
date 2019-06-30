@@ -10,7 +10,7 @@ const getTestOptions = () => {
   return JSON.parse(
     JSON.stringify({
       imagePath: './test/fixtures',
-      stylesheetPath: './test/fixtures', // Needed because of inline call.
+      stylesheetPath: './test/fixtures',
       spritePath: './test/fixtures/sprites',
     })
   );
@@ -64,33 +64,37 @@ const assertVisuallyEqual = (testDir, referenceDir, opts, done) => {
         .then(() => {
           const threshold = 0.1;
 
-          getSpriteFilenames(testDir).then((values) => {
-            values.forEach((fileName) => {
-              const testImage = PNG.sync.read(
-                fs.readFileSync(`${testDir}/${fileName}`)
-              );
-              const referenceImage = PNG.sync.read(
-                fs.readFileSync(`${referenceDir}/${fileName}`)
-              );
+          getSpriteFilenames(testDir)
+            .then((values) => {
+              values.forEach((fileName) => {
+                const testImage = PNG.sync.read(
+                  fs.readFileSync(`${testDir}/${fileName}`)
+                );
+                const referenceImage = PNG.sync.read(
+                  fs.readFileSync(`${referenceDir}/${fileName}`)
+                );
 
-              const { width, height } = referenceImage;
+                const { width, height } = referenceImage;
 
-              const imageDiff = pixelmatch(
-                testImage.data,
-                referenceImage.data,
-                null,
-                width,
-                height,
-                {
-                  threshold,
-                }
-              );
+                const imageDiff = pixelmatch(
+                  testImage.data,
+                  referenceImage.data,
+                  null,
+                  width,
+                  height,
+                  {
+                    threshold,
+                  }
+                );
 
-              expect(imageDiff).to.be.below(threshold);
+                expect(imageDiff).to.be.below(threshold);
+              });
+
+              done();
+            })
+            .catch((error) => {
+              done(error);
             });
-          });
-
-          done();
         })
         .catch((error) => {
           done(error);

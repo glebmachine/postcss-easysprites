@@ -89,7 +89,7 @@ const assertCached = (input, output, opts, done) => {
 /* eslint-disable func-names */
 describe('Caching', function() {
   before(function(done) {
-    rimraf('./test/fixtures/sprites/*', done);
+    rimraf('./test/fixtures/sprites', done);
   });
 
   it('should not find a cached version of the generated sprite', function(done) {
