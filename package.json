@@ -1,6 +1,6 @@
 {
   "name": "postcss-easysprites",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "PostCSS plugin that generate sprites, like postcss-sprites, but proper way",
   "keywords": [
     "postcss",
@@ -75,7 +75,7 @@
     "lint:watch": "esw --fix --watch --ext .js .",
     "commit": "git-cz",
     "commit:retry": "git-cz --retry",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s && ./node_modules/.bin/prettier --write 'CHANGELOG.md'",
+    "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s -r 1 -t && ./node_modules/.bin/prettier --write 'CHANGELOG.md'",
     "mocha": "mocha --recursive --timeout 5000",
     "coverage": "nyc --reporter=text-summary --reporter=html --reporter=text --reporter=lcov mocha --recursive --timeout 5000"
   },
