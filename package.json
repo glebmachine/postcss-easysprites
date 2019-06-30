@@ -60,7 +60,7 @@
     "gulp-mocha": "^6.0.0",
     "gulp-postcss": "^8.0.0",
     "gulp-rename": "^1.4.0",
-    "husky": "^2.4.1",
+    "husky": "^2.7.0",
     "nyc": "^14.1.1",
     "pixelmatch": "^5.0.2",
     "pngjs": "^3.4.0",

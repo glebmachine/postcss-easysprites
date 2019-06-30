@@ -21,7 +21,7 @@ module.exports = {
     'max-len': [
       'warn',
       {
-        code: 80,
+        comments: 80,
         ignoreTrailingComments: true,
         ignoreStrings: true,
         ignoreTemplateLiterals: true,
