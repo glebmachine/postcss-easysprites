@@ -57,6 +57,11 @@ module.exports = postcss.plugin('postcss-easysprites', (options) => {
       })
       .then(([images, spriteOptions, sprites]) => {
         return updateReferences(images, spriteOptions, sprites, css);
+      })
+      .catch((err) => {
+        if (err) {
+          throw new Error(err);
+        }
       });
   };
 });
