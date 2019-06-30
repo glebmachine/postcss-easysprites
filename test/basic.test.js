@@ -105,6 +105,15 @@ describe('Basic', function() {
     );
   });
 
+  it('should process multiple sprite groups', function(done) {
+    assertEqual(
+      'a.previous { background: url("/images/arrow-previous.png#previous-elements"); } a.previous:hover { background: url("/images/arrow-previous--hover.png#previous-elements"); } a.next { background: url("/images/arrow-next.png#next-elements"); } a.next:hover { background: url("/images/arrow-next--hover.png#next-elements"); }',
+      'a.previous { background-image: url(sprites/previous-elements.png); background-position: 0 0; } a.previous:hover { background-image: url(sprites/previous-elements.png); background-position: -48px 0; } a.next { background-image: url(sprites/next-elements.png); background-position: 0 0; } a.next:hover { background-image: url(sprites/next-elements.png); background-position: -48px 0; }',
+      getTestOptions(),
+      done
+    );
+  });
+
   it('should not process CSS comment which have background image properties', function(done) {
     assertEqual(
       'a { background-image: url("/images/arrow-next.png#elements"); } /** background-image: url("/images/arrow-next--hover.png#elements") */',
