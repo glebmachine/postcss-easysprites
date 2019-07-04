@@ -1,4 +1,5 @@
 const path = require('path');
+const ansi = require('ansi-colors');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const rimraf = require('rimraf');
@@ -42,7 +43,9 @@ describe('Sprite Layouts', function() {
     isLayout(notValidLayout);
 
     expect(warning).to.eql(
-      `${notValidLayout} is not a valid sprite layout algorithm, the default 'binary-tree' will be used instead.`
+      ansi.red(
+        `${notValidLayout} is not a valid sprite layout algorithm, the default 'binary-tree' will be used instead.`
+      )
     );
 
     consoleStub.restore();
