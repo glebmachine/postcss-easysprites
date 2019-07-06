@@ -15,11 +15,7 @@ const { mapSpritesProperties, saveSprites } = require('./lib/sprites');
 module.exports = postcss.plugin('postcss-easysprites', (options) => {
   return (css) => {
     // Setup options.
-    pluginOptions.init(options);
-    pluginOptions.setStylesheetPath(
-      options.stylesheetPath,
-      css.source.input.file
-    );
+    pluginOptions.init(options, css.source.input.file);
 
     return Promise.all([collectImages(css)])
       .then(([imageCollection]) => {
@@ -41,9 +37,7 @@ module.exports = postcss.plugin('postcss-easysprites', (options) => {
         return updateReferences(images, sprites, css);
       })
       .catch((err) => {
-        if (err) {
-          throw new Error(err);
-        }
+        throw new Error(err);
       });
   };
 });
