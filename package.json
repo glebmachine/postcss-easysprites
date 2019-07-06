@@ -43,6 +43,7 @@
     "@commitlint/cli": "^8.0.0",
     "@commitlint/config-conventional": "^8.0.0",
     "chai": "^4.0.0",
+    "chai-as-promised": "^7.1.1",
     "commitizen": "^3.1.1",
     "conventional-changelog-cli": "^2.0.21",
     "cz-customizable": "^6.2.0",
@@ -65,6 +66,7 @@
     "pixelmatch": "^5.0.2",
     "pngjs": "^3.4.0",
     "prettier": "^1.18.2",
+    "rewire": "^4.0.1",
     "rimraf": "^2.6.3",
     "sinon": "^7.3.2"
   },
@@ -75,8 +77,8 @@
     "lint:watch": "esw --fix --watch --ext .js .",
     "commit": "git-cz",
     "commit:retry": "git-cz --retry",
-    "changelog": "conventional-changelog -p eslint -i CHANGELOG.md -s -r 1 -t && ./node_modules/.bin/prettier --write 'CHANGELOG.md'",
-    "mocha": "mocha --recursive --timeout 5000",
+    "changelog": "conventional-changelog -i CHANGELOG.md -s -r 2 --tagPrefix=",
+    "mocha": "mocha --timeout 5000",
     "coverage": "nyc --reporter=text-summary --reporter=html --reporter=text --reporter=lcov mocha --recursive --timeout 5000"
   },
   "config": {
