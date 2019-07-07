@@ -6,6 +6,7 @@ chai.use(chaiAsPromised);
 const { expect } = chai;
 
 const sprites = rewire('../lib/sprites');
+const { getRetinaPadding } = require('../lib/retina-images');
 
 /* eslint-disable func-names */
 describe('Build sprites', function() {
@@ -45,5 +46,13 @@ describe('Build sprites', function() {
     expect(sprites.saveSprites(testImages, testSprites))
       .to.eventually.be.rejectedWith('saveSpriteFile failed')
       .notify(done);
+  });
+
+  it('should get default padding when retina padding cannot be calculated', function(done) {
+    const defaultPadding = getRetinaPadding([], 20);
+
+    expect(defaultPadding).to.equal(20);
+
+    done();
   });
 });
