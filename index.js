@@ -1,8 +1,8 @@
 const postcss = require('postcss');
 const { pluginOptions } = require('./lib/plugin-options');
-const { runSpriteSmith } = require('./lib/run-spritesmith');
+const { runSpritesmith } = require('./lib/run-spritesmith');
 const { updateReferences } = require('./lib/update-references');
-const { applyGroupBy } = require('./lib/apply-group-by');
+const { addSpriteGroups } = require('./lib/sprite-groups');
 const { collectImages } = require('./lib/collect-images');
 const { setTokens } = require('./lib/tokens');
 const { mapSpritesProperties, saveSprites } = require('./lib/sprites');
@@ -18,17 +18,17 @@ module.exports = postcss.plugin('postcss-easysprites', (options) => {
     pluginOptions.init(options, css.source.input.file);
 
     return Promise.all([collectImages(css)])
-      .then(([imageCollection]) => {
-        return applyGroupBy(imageCollection);
+      .then(([images]) => {
+        return addSpriteGroups(images);
       })
       .then(([images]) => {
         return setTokens(images, css);
       })
       .then(([images]) => {
-        return runSpriteSmith(images);
+        return runSpritesmith(images);
       })
-      .then(([images, results]) => {
-        return saveSprites(images, results);
+      .then(([images, sprites]) => {
+        return saveSprites(images, sprites);
       })
       .then(([images, sprites]) => {
         return mapSpritesProperties(images, sprites);
