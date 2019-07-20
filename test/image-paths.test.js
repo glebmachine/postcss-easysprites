@@ -7,10 +7,6 @@ describe('Image Paths', function() {
     rimraf('./test/fixtures/sprites', done);
   });
 
-  afterEach(function(done) {
-    rimraf('./test/fixtures/sprites', done);
-  });
-
   it('should process images with relative urls', function(done) {
     assertEqual(
       'a { background:url("images/arrow-next.png#elements"); }',

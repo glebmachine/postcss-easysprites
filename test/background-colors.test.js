@@ -3,11 +3,7 @@ const { getTestOptions, assertEqual } = require('./test-utils');
 
 /* eslint-disable func-names */
 describe('Background Colors', function() {
-  before(function(done) {
-    rimraf('./test/fixtures/sprites', done);
-  });
-
-  after(function(done) {
+  beforeEach(function(done) {
     rimraf('./test/fixtures/sprites', done);
   });
 

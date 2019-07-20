@@ -3,7 +3,8 @@ const ansi = require('ansi-colors');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const rimraf = require('rimraf');
-const { isValidLayout } = require('../lib/layouts');
+
+const { isValidSpriteLayout } = require('../lib/sprite-layouts');
 const {
   getTestOptions,
   assertEqual,
@@ -17,14 +18,10 @@ describe('Sprite Layouts', function() {
     rimraf('./test/fixtures/sprites', done);
   });
 
-  afterEach(function(done) {
-    rimraf('./test/fixtures/sprites', done);
-  });
-
-  it('should return `true` that all layouts are all valid', function(done) {
+  it('should return `true` that all layouts are valid', function(done) {
     SPRITE_LAYOUTS.forEach((layout) => {
       // eslint-disable-next-line
-      expect(isValidLayout(layout)).to.be.true;
+      expect(isValidSpriteLayout(layout)).to.be.true;
     });
 
     done();
@@ -40,7 +37,7 @@ describe('Sprite Layouts', function() {
     const consoleStub = sinon.stub(console, 'warn').callsFake(stubConsole);
 
     const notValidLayout = 'not-a-layout-algorithm';
-    isValidLayout(notValidLayout);
+    isValidSpriteLayout(notValidLayout);
 
     expect(warning).to.eql(
       ansi.red(
