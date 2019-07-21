@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0-alpha.3 (2019-07-20)
+
+- Adds more test coverage.
+- Replaces more lodash functions with native ones.
+- Updates dependencies.
+- General refactoring.
+
 ## 1.0.0-alpha.2 (2019-06-30)
 
 - Replaces Q promise libraries with native promises.
