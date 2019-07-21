@@ -7,10 +7,6 @@ describe('Basic', function() {
     rimraf('./test/fixtures/sprites', done);
   });
 
-  afterEach(function(done) {
-    rimraf('./test/fixtures/sprites', done);
-  });
-
   it('should process images defined with the `background-image` property', function(done) {
     assertEqual(
       'a { background-image: url("images/arrow-next.png#elements"); }',
@@ -22,17 +18,26 @@ describe('Basic', function() {
 
   it('should process retina images', function(done) {
     assertEqual(
-      'a { background: url("/images/arrow-next@2x.png#elements"); }',
-      'a { background-image: url(sprites/elements@2x.png); background-position: 0 0; background-size: 28px 27px; }',
+      'a { background: url("/images/arrow-next@2x.png#elements"); } a { background: url("/images/arrow-next@3x.png#elements"); }',
+      'a { background-image: url(sprites/elements@2x.png); background-position: 0 0; background-size: 28px 27px; } a { background-image: url(sprites/elements@3x.png); background-position: 0 0; background-size: 28px 27px; }',
       getTestOptions(),
       done
     );
   });
 
-  it('should skip sprite generation when an image does not exist', function(done) {
+  it('should process multiple retina images #', function(done) {
     assertEqual(
-      'a { background: url("/images/image-not-exists.png#elements"); }',
-      'a { background: url("/images/image-not-exists.png"); }',
+      'a { background: url("/images/arrow-next.png#elements"); } a:hover { background: url("/images/arrow-next@2x.png#elements"); } a:focus { background: url("/images/arrow-next@3x.png#elements"); }',
+      'a { background-image: url(sprites/elements.png); background-position: 0 0; } a:hover { background-image: url(sprites/elements@2x.png); background-position: 0 0; background-size: 28px 27px; } a:focus { background-image: url(sprites/elements@3x.png); background-position: 0 0; background-size: 28px 27px; }',
+      getTestOptions(),
+      done
+    );
+  });
+
+  it('should skip sprite generation for images that do not exist', function(done) {
+    assertEqual(
+      'a { background: url("/images/image-not-exists.png#elements"); } a:hover { background: url("/images/arrow-next.png#elements"); } a:active { background: url("/images/arrow-next.png#elements"); } a:focus { background: url("/images/image-not-exists.png#elements"); }',
+      'a { background: url("/images/image-not-exists.png"); } a:hover { background-image: url(sprites/elements.png); background-position: 0 0; } a:active { background-image: url(sprites/elements.png); background-position: 0 0; } a:focus { background: url("/images/image-not-exists.png"); }',
       getTestOptions(),
       done
     );

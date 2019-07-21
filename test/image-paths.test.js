@@ -1,18 +1,9 @@
-const { expect } = require('chai');
-const sinon = require('sinon');
-const path = require('path');
 const rimraf = require('rimraf');
-
-const { collectImages } = require('../lib/collect-images');
 const { getTestOptions, assertEqual } = require('./test-utils');
 
 /* eslint-disable func-names */
 describe('Image Paths', function() {
   beforeEach(function(done) {
-    rimraf('./test/fixtures/sprites', done);
-  });
-
-  afterEach(function(done) {
     rimraf('./test/fixtures/sprites', done);
   });
 
@@ -53,32 +44,5 @@ describe('Image Paths', function() {
       testOptions,
       done
     );
-  });
-
-  it('should throw an error when the `stylesheetsPath` option is not set', function(done) {
-    const css = {
-      source: {
-        input: {
-          file: '',
-        },
-      },
-    };
-
-    const opts = {
-      stylesheetPath: '',
-    };
-
-    const stubDirname = () => {
-      return '';
-    };
-
-    const dirnameStub = sinon.stub(path, 'dirname').callsFake(stubDirname);
-
-    expect(collectImages.bind(collectImages, css, opts)).to.throw(
-      'Stylesheets path is undefined, please use option stylesheetPath!'
-    );
-
-    dirnameStub.restore();
-    done();
   });
 });
