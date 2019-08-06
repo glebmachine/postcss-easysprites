@@ -7,8 +7,14 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2017,
   },
-  plugins: ['prettier', 'jsdoc'],
-  extends: ['eslint:recommended', 'airbnb-base', 'plugin:prettier/recommended'],
+  plugins: ['prettier', 'jsdoc', 'promise', 'sonarjs'],
+  extends: [
+    'plugin:promise/recommended',
+    'plugin:sonarjs/recommended',
+    'eslint:recommended',
+    'airbnb-base',
+    'plugin:prettier/recommended',
+  ],
   rules: {
     // Only allow debugger in development
     'no-debugger': process.env.PRE_COMMIT ? 'error' : 'off',
@@ -59,5 +65,7 @@ module.exports = {
     'jsdoc/require-returns-description': 'off',
     'jsdoc/require-returns-type': 'warn',
     'jsdoc/valid-types': 'warn',
+    'promise/prefer-await-to-then': 'warn',
+    'promise/prefer-await-to-callbacks': 'warn',
   },
 };
