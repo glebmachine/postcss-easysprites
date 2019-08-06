@@ -90,8 +90,8 @@ describe('Basic', function() {
     testOptions.padding = 100;
 
     assertEqual(
-      'a { background-image: url("images/arrow-next.png#elements"); }',
-      'a { background-image: url(sprites/elements.png); background-position: 0 0; }',
+      'a { background-image: url("images/arrow-next.png#elements"); outline: none; }',
+      'a { background-image: url(sprites/elements.png); background-position: 0 0; outline: none; }',
       testOptions,
       done
     );

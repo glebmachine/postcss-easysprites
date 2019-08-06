@@ -35,55 +35,58 @@ function uncacheLog() {
   return logCapture.toString();
 }
 
-const assertNotCached = (input, output, opts, done) => {
+const assertNotCached = async (input, output, opts, done) => {
   // Start stdout log capture.
   cacheLog();
 
-  postcss([plugin(opts)])
-    .process(input, { from: undefined })
-    .then((result) => {
-      expect(result.css).to.eql(output);
-      // eslint-disable-next-line
-      expect(result.warnings()).to.be.empty;
-
-      // Stop stdout capture.
-      fixture.release();
-
-      if (uncacheLog().indexOf('generated') === -1) {
-        return done(new Error('Sprite already cached, code red!'));
-      }
-
-      return done();
-    })
-    .catch((error) => {
-      done(error);
+  try {
+    const result = await postcss([plugin(opts)]).process(input, {
+      from: undefined,
     });
+
+    expect(result.css).to.eql(output);
+
+    // eslint-disable-next-line
+    expect(result.warnings()).to.be.empty;
+
+    // Stop stdout capture.
+    fixture.release();
+
+    if (uncacheLog().indexOf('generated') === -1) {
+      return done(new Error('Sprite already cached, code red!'));
+    }
+  } catch (error) {
+    done(error);
+  }
+
+  return done();
 };
 
-const assertCached = (input, output, opts, done) => {
+const assertCached = async (input, output, opts, done) => {
   // Start stdout log capture.
   cacheLog();
 
-  postcss([plugin(opts)])
-    .process(input, { from: undefined })
-    .then((result) => {
-      expect(result.css).to.eql(output);
-
-      // eslint-disable-next-line
-      expect(result.warnings()).to.be.empty;
-
-      // Stop stdout capture.
-      fixture.release();
-
-      if (uncacheLog().indexOf('unchanged') === -1) {
-        return done(new Error('Cache is not working'));
-      }
-
-      return done();
-    })
-    .catch((error) => {
-      done(error);
+  try {
+    const result = await postcss([plugin(opts)]).process(input, {
+      from: undefined,
     });
+
+    expect(result.css).to.eql(output);
+
+    // eslint-disable-next-line
+    expect(result.warnings()).to.be.empty;
+
+    // Stop stdout capture.
+    fixture.release();
+
+    if (uncacheLog().indexOf('unchanged') === -1) {
+      return done(new Error('Cache is not working'));
+    }
+  } catch (error) {
+    done(error);
+  }
+
+  return done();
 };
 
 /* eslint-disable func-names */

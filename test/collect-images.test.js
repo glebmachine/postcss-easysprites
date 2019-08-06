@@ -1,6 +1,8 @@
 const rewire = require('rewire');
 const { expect } = require('chai');
+const util = require('util');
 
+const setTimeoutPromise = util.promisify(setTimeout);
 const collectImagesModule = rewire('../lib/collect-images');
 
 /* eslint-disable func-names */
@@ -10,8 +12,12 @@ describe('Image Exists', function() {
       path: undefined,
     };
 
-    const fileExistsAsync = () => {
-      return Promise.reject(new Error('fileExistsAsync failed'));
+    const fileExistsAsync = async () => {
+      await setTimeoutPromise(1000, 'fileExistsAsync failed').then(
+        (message) => {
+          throw new Error(message);
+        }
+      );
     };
 
     /* eslint-disable no-underscore-dangle */

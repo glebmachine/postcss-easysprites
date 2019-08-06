@@ -16,19 +16,21 @@ const getTestOptions = () => {
   );
 };
 
-const assertEqual = (input, output, opts, done) => {
-  postcss([plugin(opts)])
-    .process(input, { from: undefined })
-    .then((result) => {
-      expect(result.css).to.eql(output);
-
-      // eslint-disable-next-line
-      expect(result.warnings()).to.be.empty;
-      done();
-    })
-    .catch((error) => {
-      done(error);
+const assertEqual = async (input, output, opts, done) => {
+  try {
+    const result = await postcss([plugin(opts)]).process(input, {
+      from: undefined,
     });
+
+    expect(result.css).to.eql(output);
+
+    // eslint-disable-next-line
+    expect(result.warnings()).to.be.empty;
+
+    done();
+  } catch (error) {
+    done(error);
+  }
 };
 
 /**
@@ -53,53 +55,57 @@ const getSpriteFilenames = (directory) => {
 const assertVisuallyEqual = (testDir, referenceDir, opts, done) => {
   const options = opts || getTestOptions();
 
+  /**
+   * Visual regression test.
+   *
+   * @param {object} err - Error callback.
+   * @param {object} css - CSS file object.
+   *
+   * @returns {Function}
+   */
+  async function visualTest(err, css) {
+    try {
+      await postcss([plugin(options)]).process(css, {
+        from: undefined,
+      });
+
+      const threshold = 0.1;
+
+      const values = await getSpriteFilenames(testDir);
+
+      values.forEach((fileName) => {
+        const testImage = PNG.sync.read(
+          fs.readFileSync(`${testDir}/${fileName}`)
+        );
+        const referenceImage = PNG.sync.read(
+          fs.readFileSync(`${referenceDir}/${fileName}`)
+        );
+        const { width, height } = referenceImage;
+        const imageDiff = pixelmatch(
+          testImage.data,
+          referenceImage.data,
+          null,
+          width,
+          height,
+          {
+            threshold,
+          }
+        );
+
+        expect(imageDiff).to.be.below(threshold);
+      });
+
+      done();
+    } catch (error) {
+      done(error);
+    }
+  }
+
   fs.readFile(
     path.resolve(__dirname, 'fixtures/input.css'),
     'utf8',
-    (err, css) => {
-      postcss([plugin(options)])
-        .process(css, {
-          from: undefined,
-        })
-        .then(() => {
-          const threshold = 0.1;
-
-          getSpriteFilenames(testDir)
-            .then((values) => {
-              values.forEach((fileName) => {
-                const testImage = PNG.sync.read(
-                  fs.readFileSync(`${testDir}/${fileName}`)
-                );
-                const referenceImage = PNG.sync.read(
-                  fs.readFileSync(`${referenceDir}/${fileName}`)
-                );
-
-                const { width, height } = referenceImage;
-
-                const imageDiff = pixelmatch(
-                  testImage.data,
-                  referenceImage.data,
-                  null,
-                  width,
-                  height,
-                  {
-                    threshold,
-                  }
-                );
-
-                expect(imageDiff).to.be.below(threshold);
-              });
-
-              done();
-            })
-            .catch((error) => {
-              done(error);
-            });
-        })
-        .catch((error) => {
-          done(error);
-        });
-    }
+    // eslint-disable-next-line
+    (err, css) => visualTest(err, css)
   );
 };
 
