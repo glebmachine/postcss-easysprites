@@ -8,9 +8,10 @@ const { setTokens } = require('./lib/tokens');
 const { mapSpritesProperties, saveSprites } = require('./lib/sprites');
 
 /**
- * postcss-easysprites module.
+ * Entry postcss-easysprites module.
+ *
  * @module postcss-easysprites
- * @param {processOptions} [options] Options passed to the plugin.
+ * @param {object} [options] - Options passed to the plugin.
  */
 module.exports = postcss.plugin('postcss-easysprites', (options) => {
   return async (css) => {
