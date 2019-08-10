@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-beta.1 (2019-08-09)
+
+- Removed dependency on lodash by replace it with native functions.
+- Added jsdoc library and npm script.
+- Converted promises to async/await syntax.
+- Updated sprite layout visual tests.
+- Updated minor dependencies.
+
 ## 1.0.0-alpha.3 (2019-07-20)
 
 - Adds more test coverage.
