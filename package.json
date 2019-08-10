@@ -1,6 +1,6 @@
 {
   "name": "postcss-easysprites",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-beta.1",
   "description": "PostCSS plugin that generate sprites, like postcss-sprites, but proper way",
   "keywords": [
     "postcss",
@@ -63,6 +63,7 @@
     "gulp-postcss": "^8.0.0",
     "gulp-rename": "^1.4.0",
     "husky": "^3.0.3",
+    "jsdoc": "^3.6.3",
     "mocha": "^6.2.0",
     "mocha-performance": "^0.1.1",
     "nyc": "^14.1.1",
@@ -84,7 +85,8 @@
     "mocha": "mocha",
     "perf": "node --prof ./node_modules/mocha/bin/_mocha",
     "performance": "node --allow-natives-syntax ./node_modules/mocha/bin/_mocha --reporter mocha-performance ./test/**/*.js",
-    "coverage": "nyc --reporter=text-summary --reporter=html --reporter=text --reporter=lcov mocha --recursive --timeout 5000"
+    "coverage": "nyc --reporter=text-summary --reporter=html --reporter=text --reporter=lcov mocha --recursive --timeout 5000",
+    "docs": "jsdoc -c jsdoc.conf.json"
   },
   "config": {
     "commitizen": {

@@ -14,7 +14,7 @@ Projects with a large number of sprites can take a long time to compile. The hel
 
 ## Relative/absolute paths
 
-The plugin supports both relative andabsolute paths on input file, but can currently only [generate relative paths on output file](https://github.com/glebmachine/postcss-easysprites/issues/4).
+The plugin supports both relative and absolute paths on input file, but can currently only [generate relative paths on output file](https://github.com/glebmachine/postcss-easysprites/issues/4).
 
 ## Plugin options
 
