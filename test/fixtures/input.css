@@ -1,33 +1,67 @@
+.grid {
+  display: flex;
+  justify-content: space-around;
+}
+
 .arrow {
   width: 28px;
   height: 27px;
   margin: 10px auto;
+  display: block;
 }
 
-.arrow {
+.arrow--previous {
+  background-image: url('images/arrow-previous.png#elements');
+}
+
+.arrow--previous:hover {
+  background-image: url('images/arrow-previous--hover.png#elements');
+}
+
+@media only screen and (min-resolution: 1.5dppx) {
+  .arrow--previous {
+    background-image: url('images/arrow-previous@2x.png#elements');
+  }
+
+  .arrow--previous:hover {
+    background-image: url('images/arrow-previous--hover@2x.png#elements');
+  }
+}
+
+@media only screen and (min-resolution: 2.5dppx) {
+  .arrow--previous {
+    background-image: url('images/arrow-previous@3x.png#elements');
+  }
+
+  .arrow--previous:hover {
+    background-image: url('images/arrow-previous--hover@3x.png#elements');
+  }
+}
+
+.arrow--next {
   background-image: url('images/arrow-next.png#elements');
 }
 
-.arrow:hover {
+.arrow--next:hover {
   background-image: url('images/arrow-next--hover.png#elements');
 }
 
 @media only screen and (min-resolution: 1.5dppx) {
-  .arrow {
+  .arrow--next {
     background-image: url('images/arrow-next@2x.png#elements');
   }
 
-  .arrow:hover {
+  .arrow--next:hover {
     background-image: url('images/arrow-next--hover@2x.png#elements');
   }
 }
 
 @media only screen and (min-resolution: 2.5dppx) {
-  .arrow {
+  .arrow--next {
     background-image: url('images/arrow-next@3x.png#elements');
   }
 
-  .arrow:hover {
+  .arrow--next:hover {
     background-image: url('images/arrow-next--hover@3x.png#elements');
   }
 }

@@ -21,15 +21,14 @@ describe('Plugin processes', function() {
     /* eslint-disable no-underscore-dangle */
     plugin.__set__('updateReferences', updateReferences);
 
-    const run = () => {
-      return postcss([plugin(opts)])
-        .process('', {
+    const run = async () => {
+      try {
+        return await postcss([plugin(opts)]).process('', {
           from: undefined,
-        })
-        .then(() => {})
-        .catch((err) => {
-          return Promise.reject(err);
         });
+      } catch (error) {
+        return Promise.reject(error);
+      }
     };
 
     expect(run())

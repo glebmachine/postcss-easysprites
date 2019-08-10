@@ -13,31 +13,20 @@ const { mapSpritesProperties, saveSprites } = require('./lib/sprites');
  * @param {processOptions} [options] Options passed to the plugin.
  */
 module.exports = postcss.plugin('postcss-easysprites', (options) => {
-  return (css) => {
+  return async (css) => {
     // Setup options.
     pluginOptions.init(options, css.source.input.file);
 
-    return Promise.all([collectImages(css)])
-      .then(([images]) => {
-        return addSpriteGroups(images);
-      })
-      .then(([images]) => {
-        return setTokens(images, css);
-      })
-      .then(([images]) => {
-        return runSpritesmith(images);
-      })
-      .then(([images, sprites]) => {
-        return saveSprites(images, sprites);
-      })
-      .then(([images, sprites]) => {
-        return mapSpritesProperties(images, sprites);
-      })
-      .then(([images, sprites]) => {
-        return updateReferences(images, sprites, css);
-      })
-      .catch((err) => {
-        throw new Error(err);
-      });
+    try {
+      const images = await collectImages(css);
+      await addSpriteGroups(images);
+      await setTokens(images, css);
+      const sprites = await runSpritesmith(images);
+      await saveSprites(images, sprites);
+      await mapSpritesProperties(images, sprites);
+      await updateReferences(images, sprites, css);
+    } catch (error) {
+      throw new Error(error);
+    }
   };
 });

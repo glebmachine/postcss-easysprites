@@ -55,4 +55,42 @@ describe('Build sprites', function() {
 
     done();
   });
+
+  it('should throw exception if directory cannot be created', function(done) {
+    const testImages = [
+      {
+        path: '',
+        url: 'images/arrow-next.png#elements',
+        stylesheetPath: './test/fixtures',
+        ratio: 1,
+        groups: ['elements'],
+        token: {},
+        hash: 'elements',
+      },
+    ];
+
+    const testSprites = [
+      {
+        coordinates: {
+          '': {},
+        },
+        properties: { width: 28, height: 27 },
+        image: '',
+        groups: ['elements'],
+        path: '',
+        isFromCache: false,
+      },
+    ];
+
+    const mkdirp = () => {
+      return Promise.reject(new Error());
+    };
+
+    /* eslint-disable no-underscore-dangle */
+    sprites.__set__('mkdirp', mkdirp);
+
+    expect(sprites.saveSprites(testImages, testSprites))
+      .to.eventually.be.rejectedWith('could not be created')
+      .notify(done);
+  });
 });

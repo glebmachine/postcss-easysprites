@@ -46,7 +46,6 @@ const scopes = [
   'gulp',
   'jest',
   'jsdoc',
-  'lodash',
   'mocha',
   'nodejs',
   'npm',

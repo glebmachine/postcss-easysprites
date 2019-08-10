@@ -3,3 +3,4 @@ node_modules
 commitizen.config.js
 commitlint.config.js
 coverage
+docs
