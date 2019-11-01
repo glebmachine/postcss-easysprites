@@ -8,9 +8,10 @@ const { setTokens } = require('./lib/tokens');
 const { mapSpritesProperties, saveSprites } = require('./lib/sprites');
 
 /**
- * postcss-easysprites module.
+ * Entry postcss-easysprites module.
+ *
  * @module postcss-easysprites
- * @param {processOptions} [options] Options passed to the plugin.
+ * @param {object} [options] - Options passed to the plugin.
  */
 module.exports = postcss.plugin('postcss-easysprites', (options) => {
   return async (css) => {
@@ -18,9 +19,12 @@ module.exports = postcss.plugin('postcss-easysprites', (options) => {
     pluginOptions.init(options, css.source.input.file);
 
     try {
+      // Find background images in the CSS.
       const images = await collectImages(css);
       await addSpriteGroups(images);
       await setTokens(images, css);
+
+      // Generate the image sprites with Spritesmith.
       const sprites = await runSpritesmith(images);
       await saveSprites(images, sprites);
       await mapSpritesProperties(images, sprites);

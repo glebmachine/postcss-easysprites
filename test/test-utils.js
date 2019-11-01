@@ -109,7 +109,7 @@ const assertVisuallyEqual = (testDir, referenceDir, opts, done) => {
   );
 };
 
-exports.getTestOptions = getTestOptions;
-exports.assertEqual = assertEqual;
-exports.getSpriteFilenames = getSpriteFilenames;
-exports.assertVisuallyEqual = assertVisuallyEqual;
+module.exports.getTestOptions = getTestOptions;
+module.exports.assertEqual = assertEqual;
+module.exports.getSpriteFilenames = getSpriteFilenames;
+module.exports.assertVisuallyEqual = assertVisuallyEqual;
