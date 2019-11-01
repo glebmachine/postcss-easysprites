@@ -19,9 +19,12 @@ module.exports = postcss.plugin('postcss-easysprites', (options) => {
     pluginOptions.init(options, css.source.input.file);
 
     try {
+      // Find background images in the CSS.
       const images = await collectImages(css);
       await addSpriteGroups(images);
       await setTokens(images, css);
+
+      // Generate the image sprites with Spritesmith.
       const sprites = await runSpritesmith(images);
       await saveSprites(images, sprites);
       await mapSpritesProperties(images, sprites);
