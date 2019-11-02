@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0 (2019-11-02)
+
+- Switch from exports to module.exports syntax.
+- Add @async jsdoc param documentation.
+- Use object destructuring for postcss decl function.
+- Switch to jsdoc eslint plugin with recommended settings.
+- Update all non-major dependencies.
+
 ## 1.0.0-beta.1 (2019-08-09)
 
 - Removed dependency on lodash by replace it with native functions.
