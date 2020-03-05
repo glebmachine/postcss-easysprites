@@ -26,6 +26,7 @@ The plugin supports both relative and absolute paths on input file, but can curr
 | `padding` | The amount of space in pixels to put around images in the sprite. _**Note:**_ This value will be scaled proportionally for retina images. | `20` |
 | `outputDimensions` | Whether to also output the pixel `height` and `width` of the image. | `false` |
 | `algorithm` | The [layout algorithm](https://github.com/twolfson/layout) spritesmith should use. | `binary-tree` |
+| `outputStylesheetPath` | Optional. Path of the final CSS file. If defined, sprite urls are relative to this path. | `undefined` |
 
 ## Input example
 
