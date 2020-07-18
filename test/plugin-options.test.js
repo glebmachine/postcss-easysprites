@@ -17,8 +17,20 @@ describe('Default options', function() {
     expect(opts.imagePath).to.equal(process.cwd());
     expect(opts.spritePath).to.equal(process.cwd());
     expect(opts.stylesheetPath).to.equal('path/to/css/file');
+    expect(opts.outputStylesheetPath).to.equal(undefined);
     expect(opts.padding).to.equal(20);
     expect(opts.algorithm).to.equal('binary-tree');
+
+    done();
+  });
+
+  it('should assign custom outputStylesheetPath path if defined by the user', function(done) {
+    const opts = pluginOptions.init(
+      { outputStylesheetPath: '/my/custom/path' },
+      'path/to/css/file/image.png'
+    );
+
+    expect(opts.outputStylesheetPath).to.equal('/my/custom/path');
 
     done();
   });
