@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.0 (2020-07-18)
+
+- Add `outputStylesheetPath` option. Big thank to [@kenfoo](https://github.com/kenfoo).
+- Update minor dependencies.
+
 ## 1.0.0 (2019-11-02)
 
 - Switch from exports to module.exports syntax.

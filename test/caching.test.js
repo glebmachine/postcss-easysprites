@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const postcss = require('postcss');
 const StdOutFixture = require('fixture-stdout');
 const rimraf = require('rimraf');
-const plugin = require('../');
+const plugin = require('..');
 const { getTestOptions } = require('./test-utils');
 
 const fixture = new StdOutFixture();
