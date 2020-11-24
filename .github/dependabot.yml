@@ -1,0 +1,15 @@
+# Dependabot config.
+version: 2
+updates:
+  # Maintain dependencies for npm
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'daily'
+    # Add assignees
+    assignees:
+      - 'patrickcate'
+    commit-message:
+      # Prefix all commit messages with "chore"
+      prefix: 'chore'
+    versioning-strategy: lockfile-only
